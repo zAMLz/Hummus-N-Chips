@@ -6,6 +6,8 @@
 #|____/ \___/ \____|____/  |_|  |_|\__,_|_|\_\___|_| |_|_|\___|
 #                                                              
 
+########################################################
+
 LATEX     = pdflatex --shell-escape
 DOC_DIR   = ./.docfiles/
 
@@ -22,7 +24,7 @@ MINT_DIR  = ${MINT_TEMP:.tex=/}
 
 ########################################################
 
-
+# Build the doc files
 docs: hummusplus_spec.pdf
 
 hummusplus_spec.pdf: ${HP_DEP}
