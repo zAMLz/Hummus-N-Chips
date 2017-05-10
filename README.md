@@ -1,5 +1,5 @@
 # Hummus-N-Chips
-### The Hummus and Chips collection of Compiler, Assembler, and Simulator
+### The Hummus and Chips Collection: Compiler, Assembler, and Simulator
 ---------------
 #### Tools (Names Subjected to Change!):
 * __chips__: (Chips Compiler) This tool is used to compile the chips programming language into HummusPlus. HummusPlus is the 32-bit variant of the HummusLite Assembly Language (An 8-bit assembly language built for a Minecraft CPU).
