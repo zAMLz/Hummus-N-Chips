@@ -6,6 +6,9 @@
 #include <stdlib.h>
 #include <libgen.h>
 #include <string.h>
+#include <stdint.h>
+
+#include "hummus_assembler.h"
 
 void usage_message();
 void help_message();
@@ -17,7 +20,6 @@ int main(int argc, char *argv[]) {
 
     char file_name_path[1024];
     char file_name[1024];
-    int  bit_size = 32;
 
     // Evaluate the command line arguments
     while ((opt = getopt(argc, argv, "@:b:h")) != -1) {
@@ -28,7 +30,7 @@ int main(int argc, char *argv[]) {
 
             // Set bit resolution
             case 'b':
-                bit_size = atoi(optarg);
+                bit_width = atoi(optarg);
                 break;
 
             // Help Message
@@ -61,8 +63,7 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    return EXIT_SUCCESS;
-
+    return assemble_hummus(file_name_path);
 }
 
 // Prints the usage message to the STDERR
