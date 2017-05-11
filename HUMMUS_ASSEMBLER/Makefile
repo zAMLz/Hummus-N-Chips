@@ -38,7 +38,7 @@ EXECBIN  = beans
 ########################################################
 
 # Build the humble HummusPlus Assembler
-${EXECBIN}: ${OBJECTS} 
+${EXECBIN}: ${HEADERS} ${OBJECTS} 
 	${CC} -o ${EXECBIN} ${OBJECTS}
 
 %.o : %.c

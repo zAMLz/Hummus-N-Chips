@@ -21,6 +21,9 @@ int main(int argc, char *argv[]) {
     char file_name_path[1024];
     char file_name[1024];
 
+    // Set the default bit width
+    bit_width = 32;
+
     // Evaluate the command line arguments
     while ((opt = getopt(argc, argv, "@:b:h")) != -1) {
         switch (opt) {
