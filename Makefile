@@ -11,6 +11,8 @@ CHIP_DIR  = CHIPS_COMPILER
 HASM_DIR  = HUMMUS_ASSEMBLER
 HSIM_DIR  = HUMMUS_SIMULATOR
 
+MAKEARGS  =  --no-print-directory -C
+
 #################################################
 
 # Build everything!!!
@@ -18,25 +20,25 @@ all: humbler simmus chips docs
 
 # Builds the documentation and cleans it up
 docs:
-	+${MAKE} -C ${DOCS_DIR}
+	+${MAKE} ${MAKEARGS} ${DOCS_DIR}
 
 chips:
-	+${MAKE} -C ${CHIP_DIR}
+	+${MAKE} ${MAKEARGS} ${CHIP_DIR}
 
 humbler:
-	+${MAKE} -C ${HASM_DIR}
+	+${MAKE} ${MAKEARGS} ${HASM_DIR}
 
 simmus:
-	+${MAKE} -C ${HSIM_DIR}
+	+${MAKE} ${MAKEARGS} ${HSIM_DIR}
 
 clean:
-	+${MAKE} -C ${HASM_DIR} clean
-	+${MAKE} -C ${HSIM_DIR} clean
-	+${MAKE} -C ${CHIP_DIR} clean
-	+${MAKE} -C ${DOCS_DIR} clean
+	+${MAKE} ${MAKEARGS} ${HASM_DIR} clean
+	+${MAKE} ${MAKEARGS} ${HSIM_DIR} clean
+	+${MAKE} ${MAKEARGS} ${CHIP_DIR} clean
+	+${MAKE} ${MAKEARGS} ${DOCS_DIR} clean
 
 spotless:
-	+${MAKE} -C ${HASM_DIR} spotless
-	+${MAKE} -C ${HSIM_DIR} spotless
-	+${MAKE} -C ${CHIP_DIR} spotless
-	+${MAKE} -C ${DOCS_DIR} spotless
+	+${MAKE} ${MAKEARGS} ${HASM_DIR} spotless
+	+${MAKE} ${MAKEARGS} ${HSIM_DIR} spotless
+	+${MAKE} ${MAKEARGS} ${CHIP_DIR} spotless
+	#+${MAKE} ${MAKEARGS} ${DOCS_DIR} spotless
