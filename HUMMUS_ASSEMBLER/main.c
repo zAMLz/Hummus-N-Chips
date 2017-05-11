@@ -52,6 +52,14 @@ int main(int argc, char *argv[]) {
     // Since this didn't fail, we proceed to get the filename
     strcpy(file_name_path, argv[optind]);
     strcpy(file_name, basename(file_name_path));
+    // We must verify that the file is indead a hal file.
+    // This added measure isn't that secure but it gives us
+    // hope that this file may have been made by the compiler.
+    char *dot = strrchr(file_name, '.');
+    if(!dot || (dot && strcmp(dot, ".hal"))) {
+        fprintf(stderr, "%s is not a .hal file!", file_name);
+        exit(EXIT_FAILURE);
+    }
 
     return EXIT_SUCCESS;
 
