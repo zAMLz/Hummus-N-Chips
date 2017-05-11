@@ -1,0 +1,111 @@
+
+
+# INITIALIZE THE UNIVERSAL TURING MACHINE
+# Setup the vairables. 
+# Assume all reserved memory and 
+# registers are zero.
+
+####################################
+
+# Specify the starting address 
+# of the tape.
+ADDB1   8     {INITIALIZE_MACHINE}        
+STR     B1
+BOOL    B1<<1
+STM     TAPE_ADDR
+BOOL    B1<<1
+STR     B1
+BOOL    B1<<1
+STR     B1
+BOOL    B1<<1
+STR     B1
+# This is the max tape address and the 
+# value of the initial state
+STM     TAPE_ADDR_END
+STM     NEXT_STATE
+
+# Make sure we read the first value of 
+# the tape instead of skipping it.
+ADDB1   2
+MEM     B2<-Mem[RS]
+LDB1    TAPE_ADDR
+ADD     B1-B2
+STM     TAPE_ADDR
+
+# Move to the next block
+SHFF    {UPDATE_THE_STATE}
+
+##################################
+
+# UPDATE THE STATE VARIABLES
+
+# Update the current state
+LDB1    NEXT_STATE  {UPDATE_THE_STATE}
+
+# Update the value of the tape 
+# we are searching for
+ADDB1   0
+MEM     B2<-Mem[RS]
+ADDB2   0
+STM     SEARCH_FOR
+
+# Update the value to replace with
+ADDB1   1
+MEM     B2<-Mem[RS]
+ADDB2   0
+STM     REPLACE_WITH
+
+# Update the tape traversal direction
+ADDB1   2
+MEM     B2<-Mem[RS]
+ADDB2   0
+STM     TAPE_DIR
+
+# Update the next state
+ADDB1   3
+MEM     B2<-Mem[RS]
+ADDB2   0
+STM     NEXT_STATE
+
+SHFF    {START_TRAVERSING_TAPE}
+
+#################################### 
+
+# TRAVERSE THE TAPE
+
+# Increment the address
+# Load the current address and 
+# the increment value
+LDB1    TAPE_ADDR  {START_TRAVERSING_TAPE}
+LDB2    TAPE_DIR
+
+# Verify that the machine has not halted.
+# i.e. increment value is zero
+ADDB2   0
+BNR     {UPDATE_ADDRESS}
+HALT
+
+# Actually increment the address here.
+ADD     B1+B2         {UPDATE_ADDRESS}
+STM     TAPE_ADDR 
+
+# load the memory of the tape 
+# and what state is looking for
+MEM     B1<-Mem[RS]
+LDB2    SEARCH_FOR
+
+# evaluate if it is what we are 
+# looking for and branch accordingly
+ADD     B1-B2 
+BNR     {FOUND_ON_TAPE}
+SHFB    {START_TRAVERSING_TAPE}
+
+#####################################
+
+# IF FOUND THE ITEM ON TAPE, 
+# UPDATE THE CURRENT CELL
+
+LDB1    TAPE_ADDR     {FOUND_ON_TAPE}
+LDB2    REPLACE_WITH
+MEM     Mem[B1]<-B2 
+SHFB    {UPDATE_THE_STATE}

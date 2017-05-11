@@ -59,4 +59,213 @@
 
 \maketitle
 
+\clearpage
+\begin{center}
+\vspace{1.5cm}
+\scalebox{0.60}{
+\begin{tabular}{ | p{3.0cm} | m{2.05cm} | p{5.0cm} | p{12.0cm} | }
+  \hline
+  \textbf{INSTRUCTION} & \textbf{OPCODE} & \textbf{PSUEDO-CODE} & \textbf{DESCRIPTION} \\ 
+  \hline \hline
+  %--------------------------------------------------
+  HALT  & 0~~0~~0~~0 & \mintinline{python}|exit()| & Ends the program. \\
+  \hline 
+  %--------------------------------------------------
+  SHFF  & 0~~0~~0~~1 & \mintinline{python}|PC += unsigned(ARG)| & Moves the Program Counter Forward \\
+  \hline 
+  %--------------------------------------------------
+  SHFB  & 0~~0~~1~~0 & \mintinline{python}|PC -= unsigned(ARG)| & Moves the Program Counter Backward \\
+  \hline 
+  %--------------------------------------------------
+  BNR   & 0~~0~~1~~1 & \inputminted{python}{.docfiles/bnr.py} & If the result is not zero, add the signed number to the Program Counter, else do nothing. \\
+  \hline 
+  %--------------------------------------------------
+  INP   & 0~~1~~0~~0 & \inputminted{python}{.docfiles/inp.py} & If the value of ARG is not zero, store the user input into B2, else store it into B1. \\
+  \hline 
+  %--------------------------------------------------
+  STR   & 0~~1~~0~~1 & \inputminted{python}{.docfiles/str.py} & If the value of ARG is not zero, store the value of RESULT into B2, else store it into B1. \\
+  \hline 
+  %--------------------------------------------------
+  LDB1  & 0~~1~~1~~0 & \mintinline{python}|B1 = Mem[ARG]| & Take the byte from location ARG in Data Memory and store it into B1. \\
+  \hline 
+  %--------------------------------------------------
+  LDB2  & 0~~1~~1~~1 & \mintinline{python}|B2 = Mem[ARG]| & Take the byte from location ARG in Data memory and store it into B2. \\
+  \hline 
+  %--------------------------------------------------
+  ADDB1 & 1~~0~~0~~0 & \mintinline{python}|RS=B1+unsigned(ARG)| & Add the unsigned value of ARG to register B1 and store it into RESULT. \\
+  \hline 
+  %--------------------------------------------------
+  ADDB2 & 1~~0~~0~~1 & \mintinline{python}|RS=B2+unsigned(ARG)| & Add the unsigned value of ARG to register B2 and store it into RESULT. \\
+  \hline 
+  %--------------------------------------------------
+  BOOL  & 1~~0~~1~~0 & . . . & Perform a Boolean operation on B1 and B2 based on ARG and store it into RESULT. More details below. \\
+  \hline 
+  %--------------------------------------------------
+  ADD   & 1~~0~~1~~1 & . . . & Perform a Addition operation on B1 and B2 based on ARG and store it into RESULT. More details below. \\
+  \hline 
+  %--------------------------------------------------
+  SUBB1 & 1~~1~~0~~0 & \mintinline{python}|RS=B1-unsigned(ARG)| & Subtract the unsigned value of ARG from register B1 and store it into RESULT. \\
+  \hline 
+  %--------------------------------------------------
+  SUBB2 & 1~~1~~0~~1 & \mintinline{python}|RS=B2-unsigned(ARG)| & Subtract the unsigned value of ARG from register B2 and store it into RESULT. \\
+  \hline 
+  %--------------------------------------------------
+  STM   & 1~~1~~1~~0 & \mintinline{python}|Mem[ARG] = RS| & Store the value of B1 or B2 in location RESULT in Data Memory. \\
+  \hline 
+  %--------------------------------------------------
+  MEM   & 1~~1~~1~~1 & . . . & Handle clearing of Memory or Dynamic storing or reading of Data Memory based on value of ARG. \\
+  \hline
+\end{tabular}}
+
+~~~~~~~~~~~~
+
+\scalebox{0.60}{
+\begin{tabular}{ | p{5.5cm} | p{5.0cm} | m{12.0cm} | }
+  \hline
+  \hline
+  \textbf{ADDITION ARGUMENT} & \textbf{PSUEDO-CODE} & \textbf{DESCRIPTION} \\
+  \hline
+  \hline
+  %--------------------------------------------------
+  ~~~~~~0~~0~~0~~0 & \mintinline{python}|RS = B1 + B2| & Add B1 and B2. \\
+  \hline
+  %--------------------------------------------------
+  ~~~~~~0~~1~~0~~0 & \mintinline{python}|RS = B1 - B2| & Subtract B2 from B1. \\
+  \hline
+  %--------------------------------------------------
+  ~~~~~~1~~0~~0~~0 & \mintinline{python}|RS = -B1 + B2| & Subtract B1 from B2. \\
+  \hline
+  %--------------------------------------------------
+  ~~~~~~1~~1~~0~~0 & \mintinline{python}|RS = -B1 - B2| & Subtract B2 from Negative B1. \\
+  \hline
+\end{tabular} 
+}
+
+~~~~~~~~~~~~~
+
+\scalebox{0.60}{
+\begin{tabular}{ | p{5.5cm} | p{5.0cm} | m{12.0cm} | }
+  \hline
+  \hline
+  \textbf{BOOLEAN ARGUMENT} & \textbf{PSUEDO-CODE} & \textbf{DESCRIPTION} \\
+  \hline
+  \hline
+  %--------------------------------------------------
+  ~~~~~~0~~0~~0~~0 & \mintinline{python}|RS = B1 AND B2| & Perform a bitwise AND on B1 and B2 and store it into RESULT. \\
+  \hline
+  %--------------------------------------------------
+  ~~~~~~0~~0~~0~~1 & \mintinline{python}|RS = B1 L-AND B2| & Perform a logical AND on B1 and B2 and store it into RESULT. \\
+  \hline
+  %--------------------------------------------------
+  ~~~~~~0~~0~~1~~0 & \mintinline{python}|RS = B1 OR B2| & Perform a bitwise OR on B1 and B2 and store it into RESULT. \\
+  \hline
+  %--------------------------------------------------
+  ~~~~~~0~~0~~1~~1 & \mintinline{python}|RS = B1 L-OR B2| & Perform a logical OR on B1 and B2 and store it into RESULT. \\
+  \hline
+  %--------------------------------------------------
+  ~~~~~~0~~1~~0~~0 & \mintinline{python}|RS = B1 ^ B2| & Perform a bitwise XOR on B1 and B2 and store it into RESULT. \\
+  \hline
+  %--------------------------------------------------
+  ~~~~~~0~~1~~0~~1 & \mintinline{python}|RS = B1 ~^ B2| & Perform a bitwise XNOR on B1 and B2 and store it into RESULT. \\
+  \hline
+  %--------------------------------------------------
+  ~~~~~~0~~1~~1~~0 & \mintinline{python}|RS = B1 << 1| & Bitshift to the left by 1 on B1 and store it into RESULT. \\
+  \hline
+  %--------------------------------------------------
+  ~~~~~~0~~1~~1~~1 & \mintinline{python}|RS = B2 << 1| & Bitshift to the left by 1 on B2 and store it into RESULT. \\
+  \hline
+  %--------------------------------------------------
+  ~~~~~~1~~0~~0~~0 & \mintinline{python}|RS = ~(B1 AND B2)| & Perform a bitwise NAND on B1 and B2 and store it into RESULT. \\
+  \hline
+  %--------------------------------------------------
+  ~~~~~~1~~0~~0~~1 & \mintinline{python}|RS = ~(B1 L-AND B2)| & Perform a logical NAND on B1 and B2 and store it into RESULT.\\
+  \hline
+  %--------------------------------------------------
+  ~~~~~~1~~0~~1~~0 & \mintinline{python}|RS = ~(B1 OR B2)| & Perform a bitwise NOR on B1 and B2 and store it into RESULT. \\
+  \hline
+  %--------------------------------------------------
+  ~~~~~~1~~0~~1~~1 & \mintinline{python}|RS = ~(B1 L-OR B2)| & Perform a logical NOR on B1 and B2 and store it into RESULT. \\
+  \hline
+  %--------------------------------------------------
+  ~~~~~~1~~1~~0~~0 & \mintinline{python}|RS = ~B1| & Perform a bitwise NOT on B1 and store it into RESULT. \\
+  \hline
+  %--------------------------------------------------
+  ~~~~~~1~~1~~0~~1 & \mintinline{python}|RS = ~B2| & Perform a bitwise NOT on B2 and store it into RESULT. \\
+  \hline
+  %--------------------------------------------------
+  ~~~~~~1~~1~~1~~0 & \mintinline{python}|RS = B1 >> 1| & Bitshift to the right by 1 on B1 and store it into RESULT. \\
+  \hline
+  %--------------------------------------------------
+  ~~~~~~1~~1~~1~~1 & \mintinline{python}|RS = B2 >> 1| & Bitshift to the right by 1 on B2 and store it into RESULT. \\
+  \hline
+\end{tabular} 
+}
+
+~~~~~~~~~~~~~
+
+\scalebox{0.60}{
+\begin{tabular}{ | p{5.5cm} | p{5.0cm} | m{12.0cm} | }
+  \hline
+  \hline
+  \textbf{MEMORY ARGUMENT} & \textbf{PSUEDO-CODE} & \textbf{DESCRIPTION} \\
+  \hline
+  \hline
+  %--------------------------------------------------
+  ~~~~~~0~~0~~0~~0 & \mintinline{python}|For all Mem, Mem = 0| & Clear the data memory. \\
+  \hline
+  %--------------------------------------------------
+  ~~~~~~0~~0~~0~~1 & \mintinline{python}|B1 = Mem[B1]| & Take byte from location B1 and store it into B1.\\
+  \hline
+  %--------------------------------------------------
+  ~~~~~~0~~0~~1~~0 & \mintinline{python}|B1 = Mem[B2]| & Take byte from location B2 and store it into B1. \\
+  \hline
+  %--------------------------------------------------
+  ~~~~~~0~~0~~1~~1 & \mintinline{python}|B1 = Mem[RS]| & Take byte from location RESULT and store it into B1. \\
+  \hline
+  %--------------------------------------------------
+  ~~~~~~0~~1~~0~~0 & \mintinline{python}|Mem[B1] = B1| & Store value of B1 in address B1 in Data Memory. \\
+  \hline
+  %--------------------------------------------------
+  ~~~~~~0~~1~~0~~1 & \mintinline{python}|B2 = Mem[B1]| & Take byte from location B1 and store it into B2. \\
+  \hline
+  %--------------------------------------------------
+  ~~~~~~0~~1~~1~~0 & \mintinline{python}|B2 = Mem[B2]| & Take byte from location B2 an store it into B2. \\
+  \hline
+  %--------------------------------------------------
+  ~~~~~~0~~1~~1~~1 & \mintinline{python}|B2 = Mem[RS]| & Take byte from location RESULT and store it into B2. \\
+  \hline
+  %--------------------------------------------------
+  ~~~~~~1~~0~~0~~0 & \mintinline{python}|Mem[B1] = B2| & Store value of B2 in address B1 in Data Memory. \\
+  \hline
+  %--------------------------------------------------
+  ~~~~~~1~~0~~0~~1 & \mintinline{python}|Mem[B2] = B1| & Store value of B1 in address B2 in Data Memory. \\
+  \hline
+  %--------------------------------------------------
+  ~~~~~~1~~0~~1~~0 & \mintinline{python}|Mem[B2] = B2| & Store value of B2 in address B2 in Data Memory. \\
+  \hline
+  %--------------------------------------------------
+  ~~~~~~1~~0~~1~~1 & \mintinline{python}|Mem[B2] = RS| & Store value of REULT in address B2 in Data Memory. \\
+  \hline
+  %--------------------------------------------------
+  ~~~~~~1~~1~~0~~0 & \mintinline{python}|Mem[B1] = RS| & Store value of RESULT in address B1 in Data Memory. \\
+  \hline
+  %--------------------------------------------------
+  ~~~~~~1~~1~~0~~1 & \mintinline{python}|Mem[RS] = B1| & Store value of B1 in address RESULT in Data Memory. \\
+  \hline
+  %--------------------------------------------------
+  ~~~~~~1~~1~~1~~0 & \mintinline{python}|Mem[RS] = B2| & Store value of B2 in address RESULT in Data Memory. \\
+  \hline
+  %--------------------------------------------------
+  ~~~~~~1~~1~~1~~1 & \mintinline{python}|Mem[RS] = RS| & Store value of RESULT in address RESULT in Data Memory. \\
+  \hline
+\end{tabular} 
+}
+
+\end{center}
+
+\clearpage
+Example of the language can be seen below. This is the implementation of a Turing Machine.
+
+\inputminted{python}{.docfiles/turingMachine.hal}
+
 \end{document}
