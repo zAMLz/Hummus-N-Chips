@@ -28,7 +28,7 @@ DEPFILE  = Makefile.dep
 
 MAINFILE = main.c
 
-SUPPFILE = hummus_assembler.c
+SUPPFILE = beans_assembler.c hummus_plus_assembly.c
 SOURCES  = ${MAINFILE} ${SUPPFILE}
 
 HEADERS  = ${SUPPFILE:.c=.h}
