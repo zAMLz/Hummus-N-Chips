@@ -20,11 +20,32 @@
 
 ########################################################
 
+CC      = gcc -O0 -Wall -Wextra
+
+README   = README
+MKFILE   = Makefile
+DEPFILE  = Makefile.dep
+
+MAINFILE = main.c
+
+SUPPFILE = 
+SOURCES  = ${MAINFILE} ${SUPPFILE}
+
+HEADERS  = ${SUPPFILE:.c=.h}
+OBJECTS  = ${SOURCES:.c=.o}
+EXECBIN  = beans
+
 ########################################################
 
 # Build the humble HummusPlus Assembler
-humbler: 
+${EXECBIN}: ${OBJECTS} 
+	${CC} -o ${EXECBIN} ${OBJECTS}
+
+%.o : %.c
+	${CC} -c $<
 
 clean:
+	- rm ${OBJECTS}
 
-spotless:                                                         
+spotless: clean
+	- rm ${EXECBIN}                                               

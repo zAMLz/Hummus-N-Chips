@@ -18,16 +18,16 @@ all: humbler simmus chips docs
 
 # Builds the documentation and cleans it up
 docs:
-	+${MAKE} -C ${DOCS_DIR} docs
+	+${MAKE} -C ${DOCS_DIR}
 
 chips:
-	+${MAKE} -C ${CHIP_DIR} chips
+	+${MAKE} -C ${CHIP_DIR}
 
 humbler:
-	+${MAKE} -C ${HASM_DIR} humbler
+	+${MAKE} -C ${HASM_DIR}
 
 simmus:
-	+${MAKE} -C ${HSIM_DIR} simmus
+	+${MAKE} -C ${HSIM_DIR}
 
 clean:
 	+${MAKE} -C ${HASM_DIR} clean
