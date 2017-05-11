@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include "beans_assembler.h"
+#include "debug_util.h"
 
 void usage_message();
 void help_message();
@@ -26,6 +27,7 @@ int main(int argc, char *argv[]) {
         switch (opt) {
             // Turn on Debugging Mode
             case '@':
+                set_debug_flags(optarg);
                 break;
 
             // Help Message
@@ -49,6 +51,10 @@ int main(int argc, char *argv[]) {
     // Since this didn't fail, we proceed to get the filename
     strcpy(file_name_path, argv[optind]);
     strcpy(file_name, basename(file_name_path));
+    
+    debug_print("@m", stdout, "Filename+path: %s\n", file_name_path);
+    debug_print("@m", stdout, "Filename:      %s\n", file_name);
+
     // We must verify that the file is indead a hal file.
     // This added measure isn't that secure but it gives us
     // hope that this file may have been made by the compiler.
