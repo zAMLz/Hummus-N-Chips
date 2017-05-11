@@ -16,7 +16,7 @@ MAKEARGS  =  --no-print-directory -C
 #################################################
 
 # Build everything!!!
-all: humbler simmus chips docs
+all: beans simmus chips docs
 
 # Builds the documentation and cleans it up
 docs:
@@ -25,7 +25,7 @@ docs:
 chips:
 	+${MAKE} ${MAKEARGS} ${CHIP_DIR}
 
-humbler:
+beans:
 	+${MAKE} ${MAKEARGS} ${HASM_DIR}
 
 simmus:
