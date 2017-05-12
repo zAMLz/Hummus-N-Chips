@@ -11,8 +11,32 @@
 #include "hummus_plus_assembly.h"
 #include "debug_util.h"
 
-int preprocess(FILE *hal_file, FILE *bin_file);
+// Once file contents are loaded in, this function processes it
+int preprocess_hal(FILE *hal_file, FILE *bin_file);
 
+
+///////////////////////////////////////////////////////////////////////
+
+// Performs operations to remove all comments and empty lines from the file. 
+int preprocess_comments_spaces(char *buffer);
+// Define the state machine used by this preprocessor function
+enum CSP_STATE_NAMES {
+    NEWLINE,
+    COMMENT,
+    SAVECHAR,
+    SAVESPACE,
+    BADSPACE
+} CSP_STATE;
+// The individual state functions (DFA Transitions)
+void  csp_newline(char *reader, char *writer);
+void  csp_comment(char *reader, char *writer);
+char* csp_savechar(char *reader, char *writer);
+char* csp_savespace(char *reader, char *writer);
+void  csp_badspace(char *reader, char *writer);
+
+///////////////////////////////////////////////////////////////////////
+
+// The main function for assembling the language from .hal to .bin
 int assemble_hummus(char *file_name_path) {
     
     char file_name_in[1024];
@@ -45,7 +69,7 @@ int assemble_hummus(char *file_name_path) {
     debug_print("@b", stdout, "Input file was successfully opened!\n");
     
     // Do preprocessing phase here.
-    if (preprocess(file_data_in, file_data_out) == EXIT_FAILURE) return EXIT_FAILURE;
+    if (preprocess_hal(file_data_in, file_data_out) == EXIT_FAILURE) return EXIT_FAILURE;
 
     int flclose_rc_01 = fclose(file_data_in);
     int flclose_rc_02 = fclose(file_data_out);
@@ -62,7 +86,7 @@ int assemble_hummus(char *file_name_path) {
 }
 
 
-int preprocess(FILE *hal_file, FILE *bin_file) {
+int preprocess_hal(FILE *hal_file, FILE *bin_file) {
 
     ////////////////////////////////////////////
     //  Copy contents of the file into memory //
@@ -110,6 +134,60 @@ int preprocess(FILE *hal_file, FILE *bin_file) {
     debug_print("@b", stdout, "\n\n############\nINPUT FILE\n############\n\n");
     debug_print("@b", stdout, "%s", buffer);
 
+    preprocess_comments_spaces(buffer);
+
     free(buffer);
     return EXIT_SUCCESS;
+}
+
+
+int preprocess_comments_spaces(char *buffer) {
+    char *reader = buffer;
+    char *writer = buffer;
+
+    // Reset the state machine
+    CSP_STATE = NEWLINE;
+    // Perform the processing loop
+    while(*reader){
+
+        switch(CSP_STATE) {
+            case NEWLINE:
+                csp_newline(reader, writer);
+                break;
+            case COMMENT:
+                csp_comment(reader, writer);
+                break;
+            case SAVECHAR:
+                writer = csp_savechar(reader, writer);
+                break;
+            case SAVESPACE:
+                writer = csp_savespace(reader, writer);
+                break;
+            case BADSPACE:
+                csp_badspace(reader, writer);
+                break;
+            default:
+                debug_print("@b", stderr, 
+                    "Bad State Change in preprocess_comments_spaces()\n");
+                return EXIT_FAILURE;
+        }
+        reader++;
+    }
+    return EXIT_SUCCESS;
+}
+
+void csp_newline(char *reader, char *writer) {
+    //return writer;
+}
+void csp_comment(char *reader, char *writer) {
+    //return writer;
+}
+char* csp_savechar(char *reader, char *writer) {
+    return writer;
+}
+char* csp_savespace(char *reader, char *writer) {
+    return writer;
+}
+void csp_badspace(char *reader, char *writer)  {
+    //return writer;
 }
