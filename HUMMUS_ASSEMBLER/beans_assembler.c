@@ -51,7 +51,7 @@ int assemble_hummus(char *file_name_path) {
     int flclose_rc_02 = fclose(file_data_out);
     
     if (flclose_rc_01 != 0 || flclose_rc_02 != 0) {
-        fprintf(stderr, "Pipe was not able to be closed!\n");
+        fprintf(stderr, "Files were unable to be closed!\n");
         debug_print("@b", stderr, "plclose_rc_01: %x (%s)\n", flclose_rc_01, file_name_in);
         debug_print("@b", stderr, "plclose_rc_02: %x (%s)\n", flclose_rc_02, file_name_out);
         return EXIT_FAILURE;
@@ -63,5 +63,53 @@ int assemble_hummus(char *file_name_path) {
 
 
 int preprocess(FILE *hal_file, FILE *bin_file) {
+
+    ////////////////////////////////////////////
+    //  Copy contents of the file into memory //
+    ////////////////////////////////////////////
+    
+    long fsize;
+    char *buffer;
+    size_t result;
+
+    // get the file size of the .hal file
+    fseek(hal_file, 0, SEEK_END);
+    fsize = ftell(hal_file);
+    fseek(hal_file, 0, SEEK_SET);
+
+    // allocate memory to contain the whole file:
+    buffer = (char*)malloc(sizeof(char)*fsize);
+    // Make sure it is alright
+    if(buffer == NULL) {
+        fprintf(stderr, "Unable to allocate memory for input file!\n");
+        debug_print("@b", stderr, "file-size: %ld", fsize);
+        free(buffer);
+        return EXIT_FAILURE;
+    }
+
+    // copy file contents
+    result = fread(buffer, 1, fsize, hal_file);
+    // Ensure that this process didn't fail
+    if(result != (unsigned long)fsize) {
+        fprintf(stderr, "Unable to copy file contents to buffer!\n");
+        debug_print("@b", stderr, "file-size: %ld", fsize);
+        debug_print("@b", stderr, "fread(): %zu", result);
+        free(buffer);
+        return EXIT_FAILURE;
+    }
+
+    ////////////////////////////////////////////
+    //  Perform the actual preprocessing now  //
+    ////////////////////////////////////////////
+    /* 
+        1) Remove comment lines and empty lines.
+        2) Create label table and variable table.
+        3) Parse every line (string -> binary)
+    */
+
+    debug_print("@b", stdout, "\n\n############\nINPUT FILE\n############\n\n");
+    debug_print("@b", stdout, "%s", buffer);
+
+    free(buffer);
     return EXIT_SUCCESS;
 }

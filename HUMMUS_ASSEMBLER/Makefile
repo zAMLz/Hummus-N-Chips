@@ -47,7 +47,7 @@ ${EXECBIN}: ${HEADERS} ${OBJECTS}
 
 clean:
 	- rm ${OBJECTS}
-	- rm test.bin
+	- rm ./*.bin
 
 spotless: clean
 	- rm ${EXECBIN}                                               
