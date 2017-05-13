@@ -37,7 +37,7 @@ clean:
 	+${MAKE} ${MAKEARGS} ${CHIP_DIR} clean
 	+${MAKE} ${MAKEARGS} ${DOCS_DIR} clean
 
-spotless:
+spotless: clean
 	+${MAKE} ${MAKEARGS} ${HASM_DIR} spotless
 	+${MAKE} ${MAKEARGS} ${HSIM_DIR} spotless
 	+${MAKE} ${MAKEARGS} ${CHIP_DIR} spotless
