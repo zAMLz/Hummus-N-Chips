@@ -29,7 +29,7 @@ DEPFILE  = Makefile.dep
 MAINFILE = main.c
 
 SUPP_01  = beans_assembler.c hummus_plus_assembly.c
-SUPPFILE = ${SUPP_01} debug_util.c
+SUPPFILE = ${SUPP_01} debug_util.c prep_cmt_sp_dfa.c
 SOURCES  = ${MAINFILE} ${SUPPFILE}
 
 HEADERS  = ${SUPPFILE:.c=.h}
