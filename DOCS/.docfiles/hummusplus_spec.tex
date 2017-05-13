@@ -27,7 +27,7 @@
 
 % What is the point of this part exactly?
 \markboth{HummusPlus~Language~Specifications}
-{zAMLz: Hummus-N-Chips}
+{Amlesh Sivanantham: Hummus-N-Chips}
 
 %Start the abstract
 % \IEEEcompsoctitleabstractindextext{%
@@ -77,13 +77,13 @@
   SHFB  & 0~~0~~1~~0 & \mintinline{python}|PC -= unsigned(ARG)| & Moves the Program Counter Backward \\
   \hline 
   %--------------------------------------------------
-  BNR   & 0~~0~~1~~1 & \inputminted{python}{.docfiles/bnr.py} & If the result is not zero, add the signed number to the Program Counter, else do nothing. \\
+  BNR   & 0~~0~~1~~1 & \inputminted{python}{.docfiles/bnr.txt} & If the result is not zero, add the signed number to the Program Counter, else do nothing. \\
   \hline 
   %--------------------------------------------------
-  INP   & 0~~1~~0~~0 & \inputminted{python}{.docfiles/inp.py} & If the value of ARG is not zero, store the user input into B2, else store it into B1. \\
+  INP   & 0~~1~~0~~0 & \inputminted{python}{.docfiles/inp.txt} & If the value of ARG is not zero, store the user input into B2, else store it into B1. \\
   \hline 
   %--------------------------------------------------
-  STR   & 0~~1~~0~~1 & \inputminted{python}{.docfiles/str.py} & If the value of ARG is not zero, store the value of RESULT into B2, else store it into B1. \\
+  STR   & 0~~1~~0~~1 & \inputminted{python}{.docfiles/str.txt} & If the value of ARG is not zero, store the value of RESULT into B2, else store it into B1. \\
   \hline 
   %--------------------------------------------------
   LDB1  & 0~~1~~1~~0 & \mintinline{python}|B1 = Mem[ARG]| & Take the byte from location ARG in Data Memory and store it into B1. \\
