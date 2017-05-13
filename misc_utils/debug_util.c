@@ -15,6 +15,13 @@ void set_debug_flags(char *dcode) {
     strcpy(user_debug_values, dcode);
 }
 
+// Check if flag is set
+int check_debug_flags(const char *dcode){
+    if (strpbrk(user_debug_values, dcode) != 0)
+        return 1;
+    return 0;
+}
+
 // This is the debug print function. It must check to see if the specified code
 // is allowed to be verbosed or not.
 // source: http://stackoverflow.com/questions/14766040/function-arguments-like-printf-in-c

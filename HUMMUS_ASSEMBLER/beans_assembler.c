@@ -36,7 +36,7 @@ int assemble_hummus(char *file_name_path) {
     // pipe the contents of the file
     // so we can do preprocessing.
     file_data_in  = fopen(file_name_path, "r");
-    file_data_out = fopen(file_name_out,  "w");
+    file_data_out = fopen(file_name_out,  "wb");
 
     // Ensure its okay
     if(file_data_in == NULL) {
@@ -122,12 +122,15 @@ int preprocess_hal(FILE *hal_file, FILE *bin_file) {
     preprocess_comments_spaces(buffer);
 
     debug_print("@b", stdout, "\n\n------------------------------------------");
-    debug_print("@b", stdout, "\n\t    PREPROCESSED FILE\n");
+    debug_print("@b", stdout, "\n\t    PREPROCESSED FILE (1)\n");
     debug_print("@b", stdout, "------------------------------------------\n\n");
     debug_print("@b", stdout, "%s", buffer);
 
-    fprintf(bin_file, "%s", buffer);
-
+    if (check_debug_flags("@w")) {
+        FILE *debug_file = fopen("output_p1.log",  "w");
+        debug_print("@w", debug_file, "%s", buffer);
+    }
+    
     free(buffer);
     return EXIT_SUCCESS;
 }

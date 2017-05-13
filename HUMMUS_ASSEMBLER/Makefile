@@ -20,7 +20,7 @@
 
 ########################################################
 
-CC      = gcc -O0 -Wall -Wextra
+CC      = gcc -O0 -Wall -Wextra -Wpedantic
 
 README   = README
 MKFILE   = Makefile
@@ -48,6 +48,7 @@ ${EXECBIN}: ${HEADERS} ${OBJECTS}
 clean:
 	- rm ${OBJECTS}
 	- rm ./*.bin
+	- rm ./*.log
 
 spotless: clean
 	- rm ${EXECBIN}                                               

@@ -22,6 +22,9 @@ beans (HummusPlus Assembler)
 // Sets the debug codes for the internal debugger
 void set_debug_flags(char *dcode);
 
+// Check if flag is set
+int check_debug_flags(const char *dcode);
+
 // This is the debug print function. It must check to see if the specified code
 // is allowed to be verbosed or not.
 int debug_print(const char* debug_code, FILE *stream, const char* message, ...);
