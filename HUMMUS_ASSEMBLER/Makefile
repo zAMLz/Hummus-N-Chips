@@ -20,7 +20,7 @@
 
 ########################################################
 
-CC      = gcc -O0 -Wall -Wextra -Wpedantic
+CC      = gcc -g -O2 -Wall -Wextra -Wpedantic
 
 README   = README
 MKFILE   = Makefile
@@ -29,7 +29,8 @@ DEPFILE  = Makefile.dep
 MAINFILE = main.c
 
 SUPP_01  = beans_assembler.c hummus_plus_assembly.c
-SUPPFILE = ${SUPP_01} debug_util.c prep_cmt_sp_dfa.c
+SUPP_02  = ${SUPP_01} 
+SUPPFILE = ${SUPP_02} debug_util.c prep_cmt_sp_dfa.c
 
 SOURCES  = ${MAINFILE} ${SUPPFILE}
 

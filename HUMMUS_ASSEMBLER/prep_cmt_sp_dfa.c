@@ -1,5 +1,6 @@
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "prep_cmt_sp_dfa.h"
 #include "debug_util.h"
@@ -18,14 +19,17 @@ CSP_STATE_TYPE CSP_STATE = BADNEWLINE;
 
 // Performs operations to remove all comments and empty lines from the file.
 // STARTS THE DFA ON INPUT BUFFER 
-int preprocess_comments_spaces(char *buffer) {
+int preprocess_comments_spaces(char *buffer, long buf_size) {
     char *reader = buffer;
     char *writer = buffer;
 
+    // Set the uppder bounds of the buffer
+    buffer = buffer+buf_size;
+    
     // Reset the state machine
     CSP_STATE = BADNEWLINE;
     // Perform the processing loop
-    while(*reader){
+    while(reader < buffer){
         debug_print("q", stdout, "state: %d %c\n", CSP_STATE, *reader);
         switch(CSP_STATE) {
             case BADNEWLINE:

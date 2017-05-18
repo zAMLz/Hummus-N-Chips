@@ -81,7 +81,7 @@ int preprocess_hal(FILE *hal_file, FILE *bin_file) {
     fseek(hal_file, 0, SEEK_SET);
 
     // allocate memory to contain the whole file:
-    buffer = (char*)malloc(sizeof(char)*fsize);
+    buffer = (char*)malloc(sizeof(char)*(fsize));
     // Make sure it is alright
     if(buffer == NULL) {
         fprintf(stderr, "Unable to allocate memory for input file!\n");
@@ -116,10 +116,10 @@ int preprocess_hal(FILE *hal_file, FILE *bin_file) {
     debug_print("@b", stdout, "%s", buffer);
 
     // First pass of this function removes comments and preliminary newlines.
-    preprocess_comments_spaces(buffer);
+    preprocess_comments_spaces(buffer, fsize);
     // Second pass of this same function will remove remaining newlines caused
     // by comment chains.
-    preprocess_comments_spaces(buffer);
+    preprocess_comments_spaces(buffer, fsize);
 
     debug_print("@b", stdout, "\n\n------------------------------------------");
     debug_print("@b", stdout, "\n\t    PREPROCESSED FILE (1)\n");
