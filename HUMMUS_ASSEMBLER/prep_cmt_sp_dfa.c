@@ -19,7 +19,7 @@ CSP_STATE_TYPE CSP_STATE = BADNEWLINE;
 
 // Performs operations to remove all comments and empty lines from the file.
 // STARTS THE DFA ON INPUT BUFFER 
-int preprocess_comments_spaces(char *buffer, long buf_size) {
+int comments_spaces_dfa(char *buffer, long buf_size) {
     char *reader = buffer;
     char *writer = buffer;
 

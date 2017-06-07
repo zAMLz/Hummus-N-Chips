@@ -9,13 +9,14 @@
 
 #include "beans_assembler.h"
 #include "prep_cmt_sp_dfa.h"
-#include "hummus_plus_assembly.h"
+#include "hplus_asm.h"
+#include "dictionary.h"
 #include "debug_util.h"
 
 // Once file contents are loaded in, this function processes it
-int preprocess_hal(FILE *hal_file, FILE *bin_file);
+int preprocess_hal(FILE *hal_file, FILE *hex_file);
 
-// The main function for assembling the language from .hal to .bin
+// The main function for assembling the language from .hal to .hex
 int assemble_hummus(char *file_name_path) {
     
     char file_name_in[1024];
@@ -28,7 +29,7 @@ int assemble_hummus(char *file_name_path) {
     strcpy(file_name_in, basename(file_name_path));    // input file
     strcpy(file_name_out, file_name_in);               // output file
     char *dot = strrchr(file_name_out, '.');
-    strcpy(dot, ".bin");
+    strcpy(dot, ".hex");
 
     debug_print("@b", stdout, "Input File  -> %s\n", file_name_in);
     debug_print("@b", stdout, "Output File -> %s\n", file_name_out);
@@ -65,7 +66,7 @@ int assemble_hummus(char *file_name_path) {
 }
 
 
-int preprocess_hal(FILE *hal_file, FILE *bin_file) {
+int preprocess_hal(FILE *hal_file, FILE *hex_file) {
 
     ////////////////////////////////////////////
     //  Copy contents of the file into memory //
@@ -74,6 +75,7 @@ int preprocess_hal(FILE *hal_file, FILE *bin_file) {
     long fsize;
     char *buffer;
     size_t result;
+    int return_status = EXIT_SUCCESS;
 
     // get the file size of the .hal file
     fseek(hal_file, 0, SEEK_END);
@@ -107,7 +109,7 @@ int preprocess_hal(FILE *hal_file, FILE *bin_file) {
     /* 
         1) Remove comment lines and empty lines.
         2) Create label table and variable table.
-        3) Parse every line (string -> binary)
+        3) Parse every line (string -> hex)
     */
 
     debug_print("@b", stdout, "\n------------------------------------------");
@@ -116,10 +118,10 @@ int preprocess_hal(FILE *hal_file, FILE *bin_file) {
     debug_print("@b", stdout, "%s", buffer);
 
     // First pass of this function removes comments and preliminary newlines.
-    preprocess_comments_spaces(buffer, fsize);
     // Second pass of this same function will remove remaining newlines caused
     // by comment chains.
-    preprocess_comments_spaces(buffer, fsize);
+    return_status = return_status | comments_spaces_dfa(buffer, fsize);
+    return_status = return_status | comments_spaces_dfa(buffer, fsize);
 
     debug_print("@b", stdout, "\n\n------------------------------------------");
     debug_print("@b", stdout, "\n\t    PREPROCESSED FILE (1)\n");
@@ -131,9 +133,27 @@ int preprocess_hal(FILE *hal_file, FILE *bin_file) {
         debug_print("@w", debug_file, "%s", buffer);
     }
     
+    // Create a seperate tables for labels and symbols.
+    // labels have essentially {*}
+    // variables are any unrecognized string seperated by spaces.
+    // Make sure to not utilize primary tokens.
+    
+    dictionary vartab = create_dict();
+    dictionary symtab = create_dict();
+
+    insert_dict(vartab, "hello", 1);
+    insert_dict(symtab, "world", 2);
+
+    // Free all data structures and return
+
+    destroy_dict(vartab);
+    destroy_dict(symtab);
     free(buffer);
-    return EXIT_SUCCESS;
+    return return_status;
 }
+
+
+
 
 
 

@@ -11,7 +11,7 @@
 
 // Performs operations to remove all comments and empty lines from the file.
 // STARTS THE DFA ON INPUT BUFFER 
-int preprocess_comments_spaces(char *buffer, long buf_size);
+int comments_spaces_dfa(char *buffer, long buf_size);
 
 
 // The individual state functions (DFA Transitions functions)
