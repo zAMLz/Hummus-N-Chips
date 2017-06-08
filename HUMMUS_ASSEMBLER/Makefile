@@ -29,8 +29,9 @@ DEPFILE  = Makefile.dep
 MAINFILE = main.c
 
 SUPP_01  = beans_assembler.c hplus_asm.c
-SUPP_02  = ${SUPP_01} dictionary.c
-SUPPFILE = ${SUPP_02} debug_util.c prep_cmt_sp_dfa.c
+SUPP_02  = ${SUPP_01} dictionary.c prep_gmr_dfa.c
+SUPP_03  = ${SUPP_02} tree.c
+SUPPFILE = ${SUPP_03} debug_util.c prep_cmt_sp_dfa.c
 
 SOURCES  = ${MAINFILE} ${SUPPFILE}
 

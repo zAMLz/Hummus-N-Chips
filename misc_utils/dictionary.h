@@ -2,6 +2,8 @@
 #ifndef __DICTIONARY_H__
 #define __DICTIONARY_H__
 
+#include <stdint.h>
+
 // define a typedef for the dictionary structure
 typedef struct hash_table *dictionary;
 

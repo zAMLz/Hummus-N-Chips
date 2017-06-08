@@ -9,8 +9,10 @@
 
 #include "beans_assembler.h"
 #include "prep_cmt_sp_dfa.h"
+#include "prep_gmr_dfa.h"
 #include "hplus_asm.h"
 #include "dictionary.h"
+#include "tree.h"
 #include "debug_util.h"
 
 // Once file contents are loaded in, this function processes it
@@ -138,14 +140,18 @@ int preprocess_hal(FILE *hal_file, FILE *hex_file) {
     // variables are any unrecognized string seperated by spaces.
     // Make sure to not utilize primary tokens.
     
+    tree abstree;
+
+    grammar_dfa(buffer, abstree);
+
     dictionary vartab = create_dict();
     dictionary symtab = create_dict();
 
-    insert_dict(vartab, "hello", 1);
-    insert_dict(symtab, "world", 2);
+    // symvar_dfa(buffer, vartab, symtab);
 
     // Free all data structures and return
 
+    destroy_tree(abstree);
     destroy_dict(vartab);
     destroy_dict(symtab);
     free(buffer);
