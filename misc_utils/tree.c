@@ -16,7 +16,7 @@ struct node {
 
 
 // Initialize the branchable list
-tree create_tree(void) {
+tree create_tree(const char *token) {
     tree tr;
     tr = malloc(sizeof(*tr));
     if (tr == 0)
@@ -28,38 +28,40 @@ tree create_tree(void) {
         return NULL;
     }
     tr->right = malloc(sizeof(*tr->right));
-    if (tr->right == 0){
+    if (tr->right == 0) {
         free(tr->left);
         free(tr);
         return NULL;
     }
-    tr->value = malloc(sizeof(char *));
+    tr->value = malloc(sizeof(char *)*strlen(token));
+    if (tr->value == 0) {
+        free(tr->right);
+        free(tr->left);
+        free(tr);
+        return NULL;
+    }
+    strcpy(tr->value, token);
 
     return tr;
 }
 
 void insert_tree(tree tr, const char *token, int choice) {
+    // Ensure we can do anything if at all
     if (token == NULL)
-        return;
-    if (choice == LEFTCHILD && tr->left != NULL)
-        return;
-    if (choice == RIGHTCHILD && tr->right != NULL)
         return;
     if (choice != LEFTCHILD && choice != RIGHTCHILD)
         return;
 
-    tree child;
+    // If we are overwriting a node, destroy what is has currently
+    if (choice == LEFTCHILD && tr->left != NULL)
+        destroy_tree(tr->left);
+    if (choice == RIGHTCHILD && tr->right != NULL)
+        destroy_tree(tr->right);
 
-    child = malloc(sizeof(*child));
+    tree child = create_tree(token);
+
     if(child == 0)
         return;
-
-    child->value = malloc(sizeof(char *)*strlen(token));
-    if(child->value == 0){
-        free(child);
-        return;
-    }
-    strcpy(child->value, token);
 
     if (choice == LEFTCHILD)
         tr->left = child;

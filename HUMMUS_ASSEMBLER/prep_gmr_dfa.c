@@ -23,7 +23,7 @@ int grammar_dfa(char *buffer, tree abstree) {
     token = strtok(buffer, " \n");
     
     while(token != NULL){
-        printf("%s\n", token);
+        //printf("%s\n", token);
         token = strtok(NULL, " \n");
     }
 

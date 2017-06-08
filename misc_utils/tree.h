@@ -9,7 +9,7 @@ typedef struct node *tree;
 #define RIGHTCHILD 1
 
 // Initialize the branchable list
-tree create_tree(void);
+tree create_tree(const char *token);
 
 // Insert token into a specified child of this tree
 void insert_tree(tree tr, const char *token, int choice);
