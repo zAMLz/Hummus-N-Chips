@@ -30,13 +30,15 @@ docs:
 
 ${CHIP}:
 	+${MAKE} ${MAKEARGS} ${CHIP_DIR}
+	- mv ./${CHIP_DIR}/${CHIP} ./${CHIP}
 
 ${HASM}:
 	+${MAKE} ${MAKEARGS} ${HASM_DIR}
-	mv ./${HASM_DIR}/${HASM} ./${HASM}
+	- mv ./${HASM_DIR}/${HASM} ./${HASM}
 
 ${HSIM}:
 	+${MAKE} ${MAKEARGS} ${HSIM_DIR}
+	- mv ./${HSIM_DIR}/${HSIM} ./${HSIM}
 
 clean:
 	+${MAKE} ${MAKEARGS} ${HASM_DIR} clean
