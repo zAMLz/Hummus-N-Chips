@@ -7,28 +7,35 @@
 #                                    
 
 DOCS_DIR  = DOCS
+
 CHIP_DIR  = CHIPS_COMPILER
+CHIP      = chips
+
 HASM_DIR  = HUMMUS_ASSEMBLER
+HASM      = beans
+
 HSIM_DIR  = HUMMUS_SIMULATOR
+HSIM      = simmus
 
 MAKEARGS  =  --no-print-directory -C
 
 #################################################
 
 # Build everything!!!
-all: beans simmus chips docs
+all: ${HASM} ${HSIM} ${CHIP} docs clean
 
 # Builds the documentation and cleans it up
 docs:
 	+${MAKE} ${MAKEARGS} ${DOCS_DIR}
 
-chips:
+${CHIP}:
 	+${MAKE} ${MAKEARGS} ${CHIP_DIR}
 
-beans:
+${HASM}:
 	+${MAKE} ${MAKEARGS} ${HASM_DIR}
+	mv ./${HASM_DIR}/${HASM} ./${HASM}
 
-simmus:
+${HSIM}:
 	+${MAKE} ${MAKEARGS} ${HSIM_DIR}
 
 clean:
@@ -38,6 +45,7 @@ clean:
 	+${MAKE} ${MAKEARGS} ${DOCS_DIR} clean
 
 spotless: clean
+	- rm ./${HASM} ./${HSIM} ./${CHIP}
 	+${MAKE} ${MAKEARGS} ${HASM_DIR} spotless
 	+${MAKE} ${MAKEARGS} ${HSIM_DIR} spotless
 	+${MAKE} ${MAKEARGS} ${CHIP_DIR} spotless
