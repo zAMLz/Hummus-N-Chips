@@ -46,7 +46,7 @@ clean:
 
 spotless: clean
 	- rm ./${HASM} ./${HSIM} ./${CHIP}
-	+${MAKE} ${MAKEARGS} ${HASM_DIR} spotless
-	+${MAKE} ${MAKEARGS} ${HSIM_DIR} spotless
-	+${MAKE} ${MAKEARGS} ${CHIP_DIR} spotless
-	#+${MAKE} ${MAKEARGS} ${DOCS_DIR} spotless
+	# +${MAKE} ${MAKEARGS} ${HASM_DIR} spotless
+	# +${MAKE} ${MAKEARGS} ${HSIM_DIR} spotless
+	# +${MAKE} ${MAKEARGS} ${CHIP_DIR} spotless
+	# +${MAKE} ${MAKEARGS} ${DOCS_DIR} spotless
