@@ -13,7 +13,7 @@ typedef struct node *tree;
 struct node {
     tree *children;
     int size;
-    char *value;
+    char *token;
 };
 
 #define LEFTCHILD 0

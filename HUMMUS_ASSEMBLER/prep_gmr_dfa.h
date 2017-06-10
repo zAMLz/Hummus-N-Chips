@@ -3,7 +3,7 @@
 #define _PREP_GMR_DFA_H_
 
 #include "tree.h"
-
+#include "dictionary.h"
 /*
     The Goal of this DFA is to parse the variables and
     labels found in buffer.
@@ -15,5 +15,9 @@
 // This will simply create our initial abstract
 // syntax tree.
 int abstree_dfa(char *buffer, tree ast);
+
+// Parse the relevent variables and labels and store them 
+// into the variable and symbol tables
+int varlab_dfa(tree ast, dictionary vartab, dictionary labtab);
 
 #endif

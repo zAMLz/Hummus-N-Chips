@@ -104,18 +104,18 @@ int preprocess_hal(FILE *hal_file, FILE *hex_file, FILE *log_file) {
     // Various data structures of assembling
     tree        abstree = create_tree("__ROOT__");
     dictionary  vartab  = create_dict();
-    dictionary  symtab  = create_dict();
+    dictionary  labtab  = create_dict();
     
     int return_status = EXIT_SUCCESS;
 
-    if(abstree == NULL || vartab == NULL || symtab == NULL) {
+    if(abstree == NULL || vartab == NULL || labtab == NULL) {
         fprintf(stderr, "Unable to allocate memory for Necessary Data Structures\n");
         if (abstree != NULL) 
             destroy_tree(abstree);
         if (vartab != NULL) 
             destroy_dict(vartab);
-        if (symtab != NULL)
-            destroy_dict(symtab);
+        if (labtab != NULL)
+            destroy_dict(labtab);
         return EXIT_FAILURE;
     }
     
@@ -130,7 +130,7 @@ int preprocess_hal(FILE *hal_file, FILE *hex_file, FILE *log_file) {
     if(buffer == NULL) {
         destroy_tree(abstree);
         destroy_dict(vartab);
-        destroy_dict(symtab);
+        destroy_dict(labtab);
         fprintf(stderr, "Unable to allocate memory for input file!\n");
         debug_print("@b", stderr, "file-size: %ld", fsize);
         return EXIT_FAILURE;
@@ -145,7 +145,7 @@ int preprocess_hal(FILE *hal_file, FILE *hex_file, FILE *log_file) {
         debug_print("@b", stderr, "fread(): %zu", result);
         destroy_tree(abstree);
         destroy_dict(vartab);
-        destroy_dict(symtab);
+        destroy_dict(labtab);
         free(buffer);
         return EXIT_FAILURE;
     }
@@ -175,7 +175,7 @@ int preprocess_hal(FILE *hal_file, FILE *hex_file, FILE *log_file) {
     debug_print("@bw", log_file, "------------------------------------------\n\n");
     debug_print("@bw", log_file, "%s", buffer);
     
-    // Create a seperate tables for labels and symbols.
+    // Create a seperate tables for variables and labels
     // labels have essentially {*}
     // variables are any unrecognized string seperated by spaces.
     // Make sure to not utilize primary tokens.
@@ -184,14 +184,17 @@ int preprocess_hal(FILE *hal_file, FILE *hex_file, FILE *log_file) {
 
     print_tree(abstree, log_file);
 
-    // return_status = return_status | symvar_dfa(buffer, vartab, symtab);
+    return_status = return_status | varlab_dfa(abstree, vartab, labtab);
+
+    print_dict(vartab, log_file, "VARIABLE TABLE");
+    print_dict(labtab, log_file, "LABEL TABLE");
 
     // Free all data structures and return
 
     hex_file = hex_file;        // For the annoying warning message
     destroy_tree(abstree);
     destroy_dict(vartab);
-    destroy_dict(symtab);
+    destroy_dict(labtab);
     free(buffer);
     return return_status;
 }

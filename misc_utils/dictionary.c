@@ -2,11 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #include "dictionary.h"
 #include "debug_util.h"
 
-#define     INITIAL_SIZE        1024
+#define     INITIAL_SIZE        4
 #define     GROWTH_FACTOR       2
 #define     MAX_LOAD_FACTOR     1
 #define     MULTIPLIER          97
@@ -18,7 +19,7 @@
 struct entry {
     struct entry *next;
     char *key;
-    uint32_t value;
+    int32_t value;
 };
 
 // Dictionary structure
@@ -112,7 +113,7 @@ static void grow_dict(dictionary dict) {
 }
 
 // Insert key and value pair into the dictionary
-void insert_dict(dictionary dict, const char *key, uint32_t value) {
+void insert_dict(dictionary dict, const char *key, int32_t value) {
 
     struct entry *item;
     unsigned long h;
@@ -139,7 +140,7 @@ void insert_dict(dictionary dict, const char *key, uint32_t value) {
 }
 
 // Search the dictionary for a key and return the value
-uint32_t search_dict(dictionary dict, const char *key) {
+int32_t search_dict(dictionary dict, const char *key) {
 
     struct entry *item;
 
@@ -172,6 +173,26 @@ void delete_dict(dictionary dict, const char *key) {
             free(item);
 
             return;
+        }
+    }
+}
+
+void print_dict(dictionary dict, FILE *out_file, const char *name) {
+    
+    int i;
+    struct entry *item;
+
+    debug_print("@bw", out_file, "\n\n------------------------------------------");
+    debug_print("@bw", out_file, "\n       DICTIONARY  (%s)\n", name);
+    debug_print("@bw", out_file, "------------------------------------------\n\n");
+    
+    for (i = 0; i < dict->size; i++){
+        debug_print("@bw", out_file, "[%5d]\n", i);
+        item = dict->table[i];
+        while (item != NULL) {
+            debug_print("@bw", out_file, "[-----]> (%5d) %s\n",
+                item->value, item->key);
+            item = item->next;
         }
     }
 }

@@ -5,6 +5,7 @@
 
 #include "prep_gmr_dfa.h"
 #include "tree.h"
+#include "dictionary.h"
 #include "debug_util.h"
 #include "hplus_asm.h"
 
@@ -18,7 +19,6 @@ GMR_STATE_TYPE CSP_STATE;
 
 
 // Performs operations to evaluate the abstract syntax tree 
-//      to build the symbol table
 // STARTS THE DFA ON INPUT BUFFER
 int abstree_dfa(char *buffer, tree ast) {
     
@@ -37,6 +37,75 @@ int abstree_dfa(char *buffer, tree ast) {
             return EXIT_FAILURE;
         }
         token = strtok(NULL, " \n");
+    }
+
+    return EXIT_SUCCESS;
+}
+
+// Parse the relevent variables and labels and store them 
+// into the variable and label tables
+int varlab_dfa(tree ast, dictionary vartab, dictionary labtab) {
+    /*
+        We can assume that every child of the incoming ast is
+        an instruction because of absree_dfa(). Thus we will
+        iterate over its children to process relevant variables
+        and relevant labels.
+    */
+
+    int i, j;
+    int vaddr = 1;  // Virtual Address
+    tree node;
+
+    // The size variable guarantees that we only
+    // traverse tree children that are not NULL
+    for (i = 0; i < ast->size; i++) {
+        for (j = 0; j < ast->children[i]->size; j++) {
+            
+            node = ast->children[i]->children[j];
+
+            // CASE ZERO
+            //      Variables are added to the variable table
+            //      if it does not exist before. It is stored
+            //      in the variable table with a virtual address
+            //
+            //      Labels are added to the label table if it
+            //      does not exist before but it stores the
+            //      location as negative since a label in position
+            //      zero is simply a requesting the location of the
+            //      real label. I.E. When we finish this process,
+            //      an negative numbers in the label table
+            //      imply that they were referenced but do not
+            //      exist. 
+
+            if (j == 0) {
+                if (search_dict(vartab, node->token) == 0)
+                    insert_dict(vartab, node->token, vaddr++);
+            }
+            
+            // CASE ONE
+            //      Only Label definitions are allowed here.
+            //      If encountered, we must add the label
+            //      to the label table if it does not exist
+            //      or it has a value less than or equal to
+            //      zero. For all other tokens present here,
+            //      we throw errors. If multiple declarations
+            //      of the same label are present throw errors.
+
+            if (j == 1) {
+                if (search_dict(labtab, node->token) <= 0)
+                    insert_dict(labtab, node->token, i+1);
+            }
+
+            // CASE TWO
+            //      Case Two contains nodes that should not
+            //      exist normally. We will terminate the
+            //      function should we encounter it and 
+            //      print error info to the user
+
+            if (j >= 2) {
+
+            }
+        }   
     }
 
     return EXIT_SUCCESS;

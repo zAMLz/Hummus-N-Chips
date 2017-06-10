@@ -18,12 +18,12 @@ tree create_tree(const char *token) {
     tr->children = NULL;
     tr->size = 0;
 
-    tr->value = malloc(sizeof(char *)*strlen(token));
-    if (tr->value == 0) {
+    tr->token = malloc(sizeof(char *)*strlen(token));
+    if (tr->token == 0) {
         free(tr);
         return NULL;
     }
-    strcpy(tr->value, token);
+    strcpy(tr->token, token);
 
     return tr;
 }
@@ -64,7 +64,7 @@ void destroy_tree(tree tr){
     for (int i = 0; i < tr->size; i++) 
         destroy_tree(tr->children[i]);
     free(tr->children);
-    free(tr->value);
+    free(tr->token);
     free(tr);
 }
 
@@ -72,7 +72,7 @@ void print_tree_rec(tree tr, FILE *out_file, int depth) {
     int i;
     for(i = 0; i < depth; i++)
         debug_print("@bw", out_file, " |   ");
-    debug_print("@bw", out_file, "%s\n", tr->value);
+    debug_print("@bw", out_file, "%s\n", tr->token);
     for (i = 0; i < tr->size; i++)
         print_tree_rec(tr->children[i], out_file, depth+1);
 }
@@ -82,7 +82,7 @@ void print_tree(tree tr, FILE *out_file) {
     debug_print("@bw", out_file, "\n\n------------------------------------------");
     debug_print("@bw", out_file, "\n\t    ABSTRACT SYNTAX TREE\n");
     debug_print("@bw", out_file, "------------------------------------------\n\n");
-    debug_print("@bw", out_file, "%s\n", tr->value);
+    debug_print("@bw", out_file, "%s\n", tr->token);
     for (i = 0; i < tr->size; i++)
         print_tree_rec(tr->children[i], out_file, 1);
 }
