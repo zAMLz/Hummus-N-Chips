@@ -2,6 +2,8 @@
 #ifndef __PREPROCESSING_H__
 #define __PREPROCESSING_H__
 
+#include "tree.h"
+#include "dictionary.h"
 
 /*
     The Goal of this head is to store all relevant functions
