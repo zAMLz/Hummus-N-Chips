@@ -8,8 +8,7 @@
 #include <libgen.h>
 
 #include "beans_assembler.h"
-#include "prep_cmt_sp_dfa.h"
-#include "prep_gmr_dfa.h"
+#include "preprocessing.h"
 #include "hplus_asm.h"
 #include "dictionary.h"
 #include "tree.h"
@@ -80,9 +79,12 @@ int assemble_hummus(char *file_name_path) {
 
     if (flclose_rc_01 != 0 || flclose_rc_02 != 0 || flclose_rc_03 != 0) {
         fprintf(stderr, "Files were unable to be closed!\n");
-        debug_print("@b", stderr, "plclose_rc_01: %x (%s)\n", flclose_rc_01, file_name_in);
-        debug_print("@b", stderr, "plclose_rc_02: %x (%s)\n", flclose_rc_02, file_name_out);
-        debug_print("@b", stderr, "plclose_rc_03: %x (%s)\n", flclose_rc_03, file_name_log);
+        debug_print("@b", stderr, "plclose_rc_01: %x (%s)\n", 
+            flclose_rc_01, file_name_in);
+        debug_print("@b", stderr, "plclose_rc_02: %x (%s)\n", 
+            flclose_rc_02, file_name_out);
+        debug_print("@b", stderr, "plclose_rc_03: %x (%s)\n", 
+            flclose_rc_03, file_name_log);
         return EXIT_FAILURE;
     }
 
@@ -167,8 +169,8 @@ int preprocess_hal(FILE *hal_file, FILE *hex_file, FILE *log_file) {
     // First pass of this function removes comments and preliminary newlines.
     // Second pass of this same function will remove remaining newlines caused
     // by comment chains.
-    return_status = return_status | comments_spaces_dfa(buffer, fsize);
-    return_status = return_status | comments_spaces_dfa(buffer, fsize);
+    return_status = return_status | preprocess_comments_spaces(buffer, fsize);
+    return_status = return_status | preprocess_comments_spaces(buffer, fsize);
 
     debug_print("@bw", log_file, "\n\n------------------------------------------");
     debug_print("@bw", log_file, "\n\t    PREPROCESSED FILE\n");
@@ -180,11 +182,11 @@ int preprocess_hal(FILE *hal_file, FILE *hex_file, FILE *log_file) {
     // variables are any unrecognized string seperated by spaces.
     // Make sure to not utilize primary tokens.
 
-    return_status = return_status | abstree_dfa(buffer, abstree);
+    return_status = return_status | generate_abstract_syntax_tree(buffer, abstree);
 
     print_tree(abstree, log_file);
 
-    return_status = return_status | varlab_dfa(abstree, vartab, labtab);
+    return_status = return_status | generate_symbol_tables(abstree, vartab, labtab);
 
     print_dict(vartab, log_file, "VARIABLE TABLE");
     print_dict(labtab, log_file, "LABEL TABLE");

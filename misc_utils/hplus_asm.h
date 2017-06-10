@@ -132,10 +132,13 @@ enum BITWISE_MEM {
     BIT_MEMRS_RS,
 };
 
-// Returns the machine code of a specified datawidth.
+// Gets a token and returns its relevent bitvalues as int
 int get_inst_opcode(char *inst);
 int get_bool_argcode(char *barg);
 int get_add_argcode(char *aarg);
 int get_mem_argcode(char *marg);
+
+// Check to see if the given token is a label
+int is_token_label(const char *s);
 
 #endif

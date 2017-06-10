@@ -5,7 +5,7 @@
 
 #include "hplus_asm.h"
 
-// Returns the machine code of a specified datawidth.
+// Gets a token and returns its relevent bitvalues as int
 int get_inst_opcode(char *inst){
     if (strcmp(inst, TOK_HALT)     == 0) return BIT_HALT;
     if (strcmp(inst, TOK_SHFF)     == 0) return BIT_SHFF;
@@ -72,4 +72,12 @@ int get_mem_argcode(char *marg) {
     if (strcmp(marg, TOK_MEMRS_B2) == 0) return BIT_MEMRS_B2;
     if (strcmp(marg, TOK_MEMRS_RS) == 0) return BIT_MEMRS_RS;
     return -1;
+}
+
+// Check to see if the given token is a label
+int is_token_label(const char *s) {
+    int size = strlen(s);
+    if (size < 3)
+        return 0;
+    return (s[0] == '{' && s[size-1] == '}');
 }
