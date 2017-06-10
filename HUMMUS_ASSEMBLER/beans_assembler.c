@@ -102,27 +102,23 @@ int preprocess_hal(FILE *hal_file, FILE *hex_file, FILE *log_file) {
     size_t result;
 
     // Various data structures of assembling
-    tree *abstree = create_tree("__ROOT__");
-    if(abstree == NULL) {
-        fprintf(stderr, "Unable to allocate memory for Abstract Syntax Tree!\n");
-        return EXIT_FAILURE;
-    }
-    dictionary vartab = create_dict();
-    if(vartab == NULL) {
-        destroy_tree(abstree);
-        fprintf(stderr, "Unable to allocate memory for Variable Table!\n");
-        return EXIT_FAILURE;
-    }
-    dictionary symtab = create_dict();
-    if(symtab == NULL) {
-        destroy_tree(abstree);
-        destroy_dict(vartab);
-        fprintf(stderr, "Unable to allocate memory for Symbol Table!\n");
-        return EXIT_FAILURE;
-    }
+    tree        abstree = create_tree("__ROOT__");
+    dictionary  vartab  = create_dict();
+    dictionary  symtab  = create_dict();
     
     int return_status = EXIT_SUCCESS;
 
+    if(abstree == NULL || vartab == NULL || symtab == NULL) {
+        fprintf(stderr, "Unable to allocate memory for Necessary Data Structures\n");
+        if (abstree != NULL) 
+            destroy_tree(abstree);
+        if (vartab != NULL) 
+            destroy_dict(vartab);
+        if (symtab != NULL)
+            destroy_dict(symtab);
+        return EXIT_FAILURE;
+    }
+    
     // get the file size of the .hal file
     fseek(hal_file, 0, SEEK_END);
     fsize = ftell(hal_file);

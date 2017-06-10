@@ -9,8 +9,8 @@
 
 
 // Initialize the branchable list
-tree * create_tree(const char *token) {
-    tree *tr;
+tree create_tree(const char *token) {
+    tree tr;
     tr = malloc(sizeof(tree));
     if (tr == 0)
         return NULL;
@@ -28,24 +28,24 @@ tree * create_tree(const char *token) {
     return tr;
 }
 
-int insert_tree(tree *tr, const char *token) {
+int insert_tree(tree tr, const char *token) {
     // Ensure we can do anything if at all
     if (token == NULL)
         return EXIT_FAILURE;
 
-    tree *child = create_tree(token);
+    tree child = create_tree(token);
     if(child == 0)
         return EXIT_FAILURE;
 
     // If we are overwriting a node, destroy what is has currently
     if (tr->children == NULL) {
-        tr->children = malloc(sizeof(tree *));
+        tr->children = malloc(sizeof(tree));
         tr->children[0] = child;
         tr->size = 1;
         return EXIT_SUCCESS;
     }
     else {
-        tree **newchilds = malloc(sizeof(tree *)*(tr->size+1));
+        tree *newchilds = malloc(sizeof(tree)*(tr->size+1));
         int i;
         for (i = 0; i < tr->size; i++) {
             newchilds[i] = tr->children[i];
@@ -58,7 +58,7 @@ int insert_tree(tree *tr, const char *token) {
     }
 }   
 
-void destroy_tree(tree *tr){
+void destroy_tree(tree tr){
     if (tr == NULL)
         return;
     for (int i = 0; i < tr->size; i++) 
@@ -68,7 +68,7 @@ void destroy_tree(tree *tr){
     free(tr);
 }
 
-void print_tree_rec(tree *tr, FILE *out_file, int depth) {
+void print_tree_rec(tree tr, FILE *out_file, int depth) {
     int i;
     for(i = 0; i < depth; i++)
         debug_print("@bw", out_file, " |   ");
@@ -77,7 +77,7 @@ void print_tree_rec(tree *tr, FILE *out_file, int depth) {
         print_tree_rec(tr->children[i], out_file, depth+1);
 }
 
-void print_tree(tree *tr, FILE *out_file) {
+void print_tree(tree tr, FILE *out_file) {
     int i;
     debug_print("@bw", out_file, "\n\n------------------------------------------");
     debug_print("@bw", out_file, "\n\t    ABSTRACT SYNTAX TREE\n");

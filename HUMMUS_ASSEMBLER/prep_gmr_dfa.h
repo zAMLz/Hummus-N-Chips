@@ -14,6 +14,6 @@
 
 // This will simply create our initial abstract
 // syntax tree.
-int abstree_dfa(char *buffer, tree *abstree);
+int abstree_dfa(char *buffer, tree ast);
 
 #endif

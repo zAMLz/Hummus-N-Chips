@@ -20,7 +20,7 @@ GMR_STATE_TYPE CSP_STATE;
 // Performs operations to evaluate the abstract syntax tree 
 //      to build the symbol table
 // STARTS THE DFA ON INPUT BUFFER
-int abstree_dfa(char *buffer, tree *ast) {
+int abstree_dfa(char *buffer, tree ast) {
     
     char *token;
     token = strtok(buffer, " \n");
