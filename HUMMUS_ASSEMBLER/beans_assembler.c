@@ -102,10 +102,25 @@ int preprocess_hal(FILE *hal_file, FILE *hex_file, FILE *log_file) {
     size_t result;
 
     // Various data structures of assembling
-    tree       *abstree     = create_tree("__ROOT__");
-    dictionary  vartab      = create_dict();
-    dictionary  symtab      = create_dict();
-
+    tree *abstree = create_tree("__ROOT__");
+    if(abstree == NULL) {
+        fprintf(stderr, "Unable to allocate memory for Abstract Syntax Tree!\n");
+        return EXIT_FAILURE;
+    }
+    dictionary vartab = create_dict();
+    if(vartab == NULL) {
+        free(abstree);
+        fprintf(stderr, "Unable to allocate memory for Variable Table!\n");
+        return EXIT_FAILURE;
+    }
+    dictionary symtab = create_dict();
+    if(symtab == NULL) {
+        free(abstree);
+        free(vartab);
+        fprintf(stderr, "Unable to allocate memory for Symbol Table!\n");
+        return EXIT_FAILURE;
+    }
+    
     int return_status = EXIT_SUCCESS;
 
     // get the file size of the .hal file
@@ -119,7 +134,6 @@ int preprocess_hal(FILE *hal_file, FILE *hex_file, FILE *log_file) {
     if(buffer == NULL) {
         fprintf(stderr, "Unable to allocate memory for input file!\n");
         debug_print("@b", stderr, "file-size: %ld", fsize);
-        free(buffer);
         return EXIT_FAILURE;
     }
 
