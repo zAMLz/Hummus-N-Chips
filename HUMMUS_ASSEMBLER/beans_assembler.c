@@ -109,14 +109,14 @@ int preprocess_hal(FILE *hal_file, FILE *hex_file, FILE *log_file) {
     }
     dictionary vartab = create_dict();
     if(vartab == NULL) {
-        free(abstree);
+        destroy_tree(abstree);
         fprintf(stderr, "Unable to allocate memory for Variable Table!\n");
         return EXIT_FAILURE;
     }
     dictionary symtab = create_dict();
     if(symtab == NULL) {
-        free(abstree);
-        free(vartab);
+        destroy_tree(abstree);
+        destroy_dict(vartab);
         fprintf(stderr, "Unable to allocate memory for Symbol Table!\n");
         return EXIT_FAILURE;
     }
@@ -132,6 +132,9 @@ int preprocess_hal(FILE *hal_file, FILE *hex_file, FILE *log_file) {
     buffer = (char*)malloc(sizeof(char)*(fsize));
     // Make sure it is alright
     if(buffer == NULL) {
+        destroy_tree(abstree);
+        destroy_dict(vartab);
+        destroy_dict(symtab);
         fprintf(stderr, "Unable to allocate memory for input file!\n");
         debug_print("@b", stderr, "file-size: %ld", fsize);
         return EXIT_FAILURE;
@@ -144,6 +147,9 @@ int preprocess_hal(FILE *hal_file, FILE *hex_file, FILE *log_file) {
         fprintf(stderr, "Unable to copy file contents to buffer!\n");
         debug_print("@b", stderr, "file-size: %ld", fsize);
         debug_print("@b", stderr, "fread(): %zu", result);
+        destroy_tree(abstree);
+        destroy_dict(vartab);
+        destroy_dict(symtab);
         free(buffer);
         return EXIT_FAILURE;
     }
@@ -186,6 +192,7 @@ int preprocess_hal(FILE *hal_file, FILE *hex_file, FILE *log_file) {
 
     // Free all data structures and return
 
+    hex_file = hex_file;        // For the annoying warning message
     destroy_tree(abstree);
     destroy_dict(vartab);
     destroy_dict(symtab);
