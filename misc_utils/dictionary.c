@@ -112,14 +112,34 @@ static void grow_dict(dictionary dict) {
     destroy_dict(d2);
 }
 
+void insert_dict_exists(dictionary dict, const char *key, int32_t value) {
+    
+    struct entry *item;
+
+    for (item = dict->table[hash_function(key) % dict->size];
+         item != NULL;
+         item = item->next) {
+
+        if (!strcmp(item->key, key)){
+            item->value = value;
+            return;
+        }
+    }
+}
+
 // Insert key and value pair into the dictionary
 void insert_dict(dictionary dict, const char *key, int32_t value) {
 
-    struct entry *item;
-    unsigned long h;
-
     if (key == NULL)
         return;
+
+    if (search_dict(dict, key) != 0) {
+        insert_dict_exists(dict, key, value);
+        return;
+    }
+
+    struct entry *item;
+    unsigned long h;
 
     item = malloc(sizeof(*item));
 

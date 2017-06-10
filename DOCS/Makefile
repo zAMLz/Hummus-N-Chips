@@ -11,7 +11,7 @@
 LATEX     = pdflatex --shell-escape
 DOC_DIR   = ./.docfiles/
 
-HP_SPEC   = hummusplus_spec.tex
+HP_SPEC   = hummusplus_spec.tex turing.hal
 HP_DEP    = ${addprefix ${DOC_DIR},${HP_SPEC}}
 
 TEX_SRC   = ${HP_SPEC}

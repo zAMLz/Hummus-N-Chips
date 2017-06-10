@@ -11,13 +11,13 @@
 # of the tape.
 ADDB1   8     {INITIALIZE_MACHINE}        
 STR     B1
-BOOL    B1<<1
+BOOL    LB1
 STM     TAPE_ADDR
-BOOL    B1<<1
+BOOL    LB1
 STR     B1
-BOOL    B1<<1
+BOOL    LB1
 STR     B1
-BOOL    B1<<1
+BOOL    LB1
 STR     B1
 # This is the max tape address and the 
 # value of the initial state
@@ -27,7 +27,7 @@ STM     NEXT_STATE
 # Make sure we read the first value of 
 # the tape instead of skipping it.
 ADDB1   2
-MEM     B2<-Mem[RS]
+MEM     B2<-MEM[RS]
 LDB1    TAPE_ADDR
 ADD     B1-B2
 STM     TAPE_ADDR
@@ -45,25 +45,25 @@ LDB1    NEXT_STATE  {UPDATE_THE_STATE}
 # Update the value of the tape 
 # we are searching for
 ADDB1   0
-MEM     B2<-Mem[RS]
+MEM     B2<-MEM[RS]
 ADDB2   0
 STM     SEARCH_FOR
 
 # Update the value to replace with
 ADDB1   1
-MEM     B2<-Mem[RS]
+MEM     B2<-MEM[RS]
 ADDB2   0
 STM     REPLACE_WITH
 
 # Update the tape traversal direction
 ADDB1   2
-MEM     B2<-Mem[RS]
+MEM     B2<-MEM[RS]
 ADDB2   0
 STM     TAPE_DIR
 
 # Update the next state
 ADDB1   3
-MEM     B2<-Mem[RS]
+MEM     B2<-MEM[RS]
 ADDB2   0
 STM     NEXT_STATE
 
@@ -91,7 +91,7 @@ STM     TAPE_ADDR
 
 # load the memory of the tape 
 # and what state is looking for
-MEM     B1<-Mem[RS]
+MEM     B1<-MEM[RS]
 LDB2    SEARCH_FOR
 
 # evaluate if it is what we are 
@@ -107,5 +107,5 @@ SHFB    {START_TRAVERSING_TAPE}
 
 LDB1    TAPE_ADDR     {FOUND_ON_TAPE}
 LDB2    REPLACE_WITH
-MEM     Mem[B1]<-B2 
+MEM     MEM[B1]<-B2 
 SHFB    {UPDATE_THE_STATE}

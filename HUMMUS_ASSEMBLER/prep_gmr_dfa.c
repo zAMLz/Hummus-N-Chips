@@ -42,6 +42,13 @@ int abstree_dfa(char *buffer, tree ast) {
     return EXIT_SUCCESS;
 }
 
+int is_label(const char *s) {
+    int size = strlen(s);
+    if (size < 3)
+        return 0;
+    return (s[0] == '{' && s[size-1] == '}');
+}
+
 // Parse the relevent variables and labels and store them 
 // into the variable and label tables
 int varlab_dfa(tree ast, dictionary vartab, dictionary labtab) {
@@ -78,6 +85,17 @@ int varlab_dfa(tree ast, dictionary vartab, dictionary labtab) {
             //      exist. 
 
             if (j == 0) {
+                if ((get_bool_argcode(node->token) >= 0) ||
+                    (get_add_argcode(node->token) >= 0)  ||
+                    (get_mem_argcode(node->token) >= 0)   )
+                    continue;
+
+                if (is_label(node->token)) {
+                    if (search_dict(labtab, node->token) == 0)
+                        insert_dict(labtab, node->token, -1*(i+1));
+                    continue;
+                }
+
                 if (search_dict(vartab, node->token) == 0)
                     insert_dict(vartab, node->token, vaddr++);
             }
