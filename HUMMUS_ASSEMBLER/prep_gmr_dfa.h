@@ -7,8 +7,13 @@
 /*
     The Goal of this DFA is to parse the variables and
     labels found in buffer.
+    We construct an astree and then we utilize grammar
+    to figure out what are variables and labels in the tree.
+    Furthermore, we must mark attributes in the tree.
 */
 
-int grammar_dfa(char *buffer, tree abstree);
+// This will simply create our initial abstract
+// syntax tree.
+int abstree_dfa(char *buffer, tree *abstree);
 
 #endif

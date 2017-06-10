@@ -102,7 +102,7 @@ int preprocess_hal(FILE *hal_file, FILE *hex_file, FILE *log_file) {
     size_t result;
 
     // Various data structures of assembling
-    tree        abstree     = create_tree("__ROOT__");
+    tree       *abstree     = create_tree("__ROOT__");
     dictionary  vartab      = create_dict();
     dictionary  symtab      = create_dict();
 
@@ -143,10 +143,10 @@ int preprocess_hal(FILE *hal_file, FILE *hex_file, FILE *log_file) {
         3) Parse every line (string -> hex)
     */
 
-    debug_print("@b", log_file, "\n------------------------------------------");
-    debug_print("@b", log_file, "\n\t\tINPUT FILE\n");
-    debug_print("@b", log_file, "------------------------------------------\n");
-    debug_print("@b", log_file, "%s", buffer);
+    debug_print("@bw", log_file, "\n------------------------------------------");
+    debug_print("@bw", log_file, "\n\t\tINPUT FILE\n");
+    debug_print("@bw", log_file, "------------------------------------------\n");
+    debug_print("@bw", log_file, "%s", buffer);
 
     // First pass of this function removes comments and preliminary newlines.
     // Second pass of this same function will remove remaining newlines caused
@@ -154,17 +154,19 @@ int preprocess_hal(FILE *hal_file, FILE *hex_file, FILE *log_file) {
     return_status = return_status | comments_spaces_dfa(buffer, fsize);
     return_status = return_status | comments_spaces_dfa(buffer, fsize);
 
-    debug_print("@b", log_file, "\n\n------------------------------------------");
-    debug_print("@b", log_file, "\n\t    PREPROCESSED FILE (1)\n");
-    debug_print("@b", log_file, "------------------------------------------\n\n");
-    debug_print("@b", log_file, "%s", buffer);
+    debug_print("@bw", log_file, "\n\n------------------------------------------");
+    debug_print("@bw", log_file, "\n\t    PREPROCESSED FILE\n");
+    debug_print("@bw", log_file, "------------------------------------------\n\n");
+    debug_print("@bw", log_file, "%s", buffer);
     
     // Create a seperate tables for labels and symbols.
     // labels have essentially {*}
     // variables are any unrecognized string seperated by spaces.
     // Make sure to not utilize primary tokens.
 
-    return_status = return_status | grammar_dfa(buffer, abstree);
+    return_status = return_status | abstree_dfa(buffer, abstree);
+
+    print_tree(abstree, log_file);
 
     // return_status = return_status | symvar_dfa(buffer, vartab, symtab);
 

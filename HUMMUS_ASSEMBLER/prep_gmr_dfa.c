@@ -1,10 +1,12 @@
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 
 #include "prep_gmr_dfa.h"
 #include "tree.h"
 #include "debug_util.h"
+#include "hplus_asm.h"
 
 // Define the state machine used by this preprocessor function
 typedef enum GMR_STATE_NAMES {
@@ -15,15 +17,25 @@ typedef enum GMR_STATE_NAMES {
 GMR_STATE_TYPE CSP_STATE;
 
 
-// Performs operations to evaluate the grammar to build the symbol table
+// Performs operations to evaluate the abstract syntax tree 
+//      to build the symbol table
 // STARTS THE DFA ON INPUT BUFFER
-int grammar_dfa(char *buffer, tree abstree) {
+int abstree_dfa(char *buffer, tree *ast) {
     
     char *token;
     token = strtok(buffer, " \n");
     
     while(token != NULL){
-        //printf("%s\n", token);
+        if (get_inst_opcode(token) >= 0) 
+            insert_tree(ast, token);
+        else if (ast->children != NULL)
+            insert_tree(ast->children[ast->size-1], token);
+        else {
+            fprintf(stderr, "%s %s\"%s\"\n", 
+                "First Token expected to be an Instruction",
+                ", instead recieved", token);
+            return EXIT_FAILURE;
+        }
         token = strtok(NULL, " \n");
     }
 
