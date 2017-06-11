@@ -1,0 +1,31 @@
+
+# Test the different format specifiers for the numbers
+
+# Validate on this number
+ADDB1	8                 {DEFAULTS}
+ADDB1	1_3_84_7
+
+# Should be a variable
+ADDB1	0b9               {VARIABLES}
+ADDB1	0b0a0d0w03r23
+ADDB1	0o8
+ADDB1	0dA
+ADDB1	0xG
+ADDB1   0b      # Yeah should would not be a binary number
+
+# Should be bin
+ADDB1	0b01___10101      {BINARIES}
+ADDB1	0b_10_010_1010
+
+# Should be octal
+ADDB1	0o1074            {OCTALS}
+ADDB1	0o23_23
+
+# Should be dec
+ADDB1	0d129237          {DECIMALS}
+ADDB1	0d0123_012
+
+# Should be hex
+ADDB1	0x2fd1e           {HEXS}
+ADDB1	0x2_fDe_A
+

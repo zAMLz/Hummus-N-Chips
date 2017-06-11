@@ -28,8 +28,5 @@ int insert_tree(tree tr, const char *token);
 // Delete the tree
 void destroy_tree(tree tr);
 
-// Print out the contents of the tree to
-// a particular output strem.
-void print_tree(tree tr, FILE *out_file);
 
 #endif

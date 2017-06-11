@@ -67,22 +67,3 @@ void destroy_tree(tree tr){
     free(tr->token);
     free(tr);
 }
-
-void print_tree_rec(tree tr, FILE *out_file, int depth) {
-    int i;
-    for(i = 0; i < depth; i++)
-        debug_print("@bw", out_file, " |   ");
-    debug_print("@bw", out_file, "%s\n", tr->token);
-    for (i = 0; i < tr->size; i++)
-        print_tree_rec(tr->children[i], out_file, depth+1);
-}
-
-void print_tree(tree tr, FILE *out_file) {
-    int i;
-    debug_print("@bw", out_file, "\n\n------------------------------------------");
-    debug_print("@bw", out_file, "\n\t    ABSTRACT SYNTAX TREE\n");
-    debug_print("@bw", out_file, "------------------------------------------\n\n");
-    debug_print("@bw", out_file, "%s\n", tr->token);
-    for (i = 0; i < tr->size; i++)
-        print_tree_rec(tr->children[i], out_file, 1);
-}

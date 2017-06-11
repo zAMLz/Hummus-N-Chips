@@ -92,7 +92,12 @@ int assemble_hummus(char *file_name_path) {
     return EXIT_SUCCESS;
 }
 
-
+typedef enum PREPROCESS_STATE {
+    PP_BUF,
+    PP_AST,
+    PP_SYM,
+    PP_END,
+} PREP_STATE; 
 int preprocess_hal(FILE *hal_file, FILE *hex_file, FILE *log_file) {
 
     ////////////////////////////////////////////
@@ -108,7 +113,8 @@ int preprocess_hal(FILE *hal_file, FILE *hex_file, FILE *log_file) {
     dictionary  vartab  = create_dict();
     dictionary  labtab  = create_dict();
     
-    int return_status = EXIT_SUCCESS;
+    PREP_STATE PP_STATE = PP_BUF;
+    int rstatus = EXIT_SUCCESS;
 
     if(abstree == NULL || vartab == NULL || labtab == NULL) {
         fprintf(stderr, "Unable to allocate memory for Necessary Data Structures\n");
@@ -161,44 +167,64 @@ int preprocess_hal(FILE *hal_file, FILE *hex_file, FILE *log_file) {
         3) Parse every line (string -> hex)
     */
 
-    debug_print("@bw", log_file, "\n------------------------------------------");
-    debug_print("@bw", log_file, "\n\t\tINPUT FILE\n");
-    debug_print("@bw", log_file, "------------------------------------------\n");
-    debug_print("@bw", log_file, "%s", buffer);
+    while( !rstatus ) {
+        switch(PP_STATE) {
+            
+            case PP_BUF:
 
-    // First pass of this function removes comments and preliminary newlines.
-    // Second pass of this same function will remove remaining newlines caused
-    // by comment chains.
-    return_status = return_status | preprocess_comments_spaces(buffer, fsize);
-    return_status = return_status | preprocess_comments_spaces(buffer, fsize);
+                // First pass of this function removes comments 
+                // and preliminary newlines. Second pass of this 
+                // same function will remove remaining newlines 
+                // caused by comment chains.
+                print_buffer(buffer, log_file, "INPUT FILE");
+                rstatus = rstatus | preprocess_comments_spaces(buffer, fsize);
+                rstatus = rstatus | preprocess_comments_spaces(buffer, fsize);
+                print_buffer(buffer, log_file, "PREPROCESSED FILE");
+                PP_STATE = PP_AST;
 
-    debug_print("@bw", log_file, "\n\n------------------------------------------");
-    debug_print("@bw", log_file, "\n\t    PREPROCESSED FILE\n");
-    debug_print("@bw", log_file, "------------------------------------------\n\n");
-    debug_print("@bw", log_file, "%s", buffer);
-    
-    // Create a seperate tables for variables and labels
-    // labels have essentially {*}
-    // variables are any unrecognized string seperated by spaces.
-    // Make sure to not utilize primary tokens.
+                break;
 
-    return_status = return_status | generate_abstract_syntax_tree(buffer, abstree);
+            case PP_AST:
 
-    print_tree(abstree, log_file);
+                // Build the abstract syntax tree based on the 
+                // preprocessed buffer. The syntax tree will be
+                // be used for grammar analysis and variable and
+                // label table generation.
 
-    return_status = return_status | generate_symbol_tables(abstree, vartab, labtab);
+                rstatus = rstatus | generate_abstract_syntax_tree(buffer, abstree);
+                print_tree(abstree, log_file);
+                PP_STATE = PP_SYM;
+                
+                break;
 
-    print_dict(vartab, log_file, "VARIABLE TABLE");
-    print_dict(labtab, log_file, "LABEL TABLE");
+            case PP_SYM:
+
+                // Create a seperate tables for variables and labels
+                // labels have essentially {*}
+                // variables are any unrecognized string seperated by spaces.
+                // Make sure to not utilize primary tokens.
+
+                rstatus = rstatus | generate_symbol_tables(abstree, vartab, labtab);
+                print_dict(vartab, log_file, "VARIABLE TABLE");
+                print_dict(labtab, log_file, "LABEL TABLE");
+                PP_STATE = PP_END;
+
+                break;
+
+            default:
+                break;
+        }
+        if (PP_STATE == PP_END)
+            break;
+    }
 
     // Free all data structures and return
-
     hex_file = hex_file;        // For the annoying warning message
     destroy_tree(abstree);
     destroy_dict(vartab);
     destroy_dict(labtab);
     free(buffer);
-    return return_status;
+    return rstatus;
 }
 
 

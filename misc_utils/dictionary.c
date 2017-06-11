@@ -15,19 +15,6 @@
 // Code inspired by
 // http://www.cs.yale.edu/homes/aspnes/pinewiki/C(2f)HashTables.html?highlight=%28CategoryAlgorithmNotes%29
 
-// Entry stuct. Supports hash chaining
-struct entry {
-    struct entry *next;
-    char *key;
-    int32_t value;
-};
-
-// Dictionary structure
-struct hash_table {
-    int size;
-    int count;
-    struct entry **table;
-};
 
 // Initialize the dictionary
 dictionary internal_dict_create(int size) {
@@ -197,22 +184,4 @@ void delete_dict(dictionary dict, const char *key) {
     }
 }
 
-void print_dict(dictionary dict, FILE *out_file, const char *name) {
-    
-    int i;
-    struct entry *item;
 
-    debug_print("@bw", out_file, "\n\n------------------------------------------");
-    debug_print("@bw", out_file, "\n       DICTIONARY  (%s)\n", name);
-    debug_print("@bw", out_file, "------------------------------------------\n\n");
-    
-    for (i = 0; i < dict->size; i++){
-        debug_print("@bw", out_file, "[%5d]\n", i);
-        item = dict->table[i];
-        while (item != NULL) {
-            debug_print("@bw", out_file, "[-----]> (%5d) %s\n",
-                item->value, item->key);
-            item = item->next;
-        }
-    }
-}

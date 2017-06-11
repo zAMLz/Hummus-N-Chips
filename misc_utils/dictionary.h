@@ -5,6 +5,20 @@
 #include <stdint.h>
 #include <stdio.h>
 
+// Entry stuct. Supports hash chaining
+struct entry {
+    struct entry *next;
+    char *key;
+    int32_t value;
+};
+
+// Dictionary structure
+struct hash_table {
+    int size;
+    int count;
+    struct entry **table;
+};
+
 // define a typedef for the dictionary structure
 typedef struct hash_table *dictionary;
 
@@ -23,8 +37,5 @@ int32_t search_dict(dictionary dict, const char *key);
 
 // Delete a key-value pair from the dictionary from a given key
 void delete_dict(dictionary dict, const char *key);
-
-// Print the contents of the whole dictionary
-void print_dict(dictionary dict, FILE *out_file, const char *name);
 
 #endif

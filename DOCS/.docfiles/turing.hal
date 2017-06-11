@@ -9,7 +9,7 @@
 
 # Specify the starting address 
 # of the tape.
-ADDB1   8     {INITIALIZE_MACHINE}        
+ADDB1   8     {INITIALIZE_MACHINE}
 STR     B1
 BOOL    LB1
 STM     TAPE_ADDR

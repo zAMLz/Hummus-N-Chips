@@ -151,6 +151,13 @@ void csp_space(char *reader) {
         CSP_STATE = SAVECHAR;
 }
 
+void print_buffer(char *buffer, FILE *out_file, const char* name) {
+    debug_print("@bw", out_file, "\n\n------------------------------------------");
+    debug_print("@bw", out_file, "\n\t    %s\n", name);
+    debug_print("@bw", out_file, "------------------------------------------\n\n");
+    debug_print("@bw", out_file, "%s", buffer);
+}
+
 /*
     _    _         _                  _   
    / \  | |__  ___| |_ _ __ __ _  ___| |_ 
@@ -189,6 +196,25 @@ int generate_abstract_syntax_tree(char *buffer, tree ast) {
     }
 
     return EXIT_SUCCESS;
+}
+
+void print_tree_rec(tree tr, FILE *out_file, int depth) {
+    int i;
+    for(i = 0; i < depth; i++)
+        debug_print("@bw", out_file, " |   ");
+    debug_print("@bw", out_file, "%s\n", tr->token);
+    for (i = 0; i < tr->size; i++)
+        print_tree_rec(tr->children[i], out_file, depth+1);
+}
+
+void print_tree(tree tr, FILE *out_file) {
+    int i;
+    debug_print("@bw", out_file, "\n\n------------------------------------------");
+    debug_print("@bw", out_file, "\n\t    ABSTRACT SYNTAX TREE\n");
+    debug_print("@bw", out_file, "------------------------------------------\n\n");
+    debug_print("@bw", out_file, "%s\n", tr->token);
+    for (i = 0; i < tr->size; i++)
+        print_tree_rec(tr->children[i], out_file, 1);
 }
 
 /*
@@ -245,13 +271,9 @@ int generate_symbol_tables(tree ast, dictionary vartab, dictionary labtab) {
                 if ((get_bool_argcode(node->token) >= 0) ||
                     (get_add_argcode(node->token) >= 0)  ||
                     (get_mem_argcode(node->token) >= 0)  ||
-                    (get_reg_argcode(node->token) >= 0)  )
+                    (get_reg_argcode(node->token) >= 0)  ||
+                     is_token_number(node->token))
                     continue;
-
-                if (is_token_number(node->token)) {
-                    //printf("Found a Number: %s\n", node->token);
-                    continue;
-                }
 
                 if (is_token_label(node->token)) {
                     if (search_dict(labtab, node->token) == 0)
@@ -273,6 +295,11 @@ int generate_symbol_tables(tree ast, dictionary vartab, dictionary labtab) {
             //      of the same label are present throw errors.
 
             if (j == 1) {
+                if (!is_token_label(node->token)) {
+                    fprintf(stderr, "Expected a label, got \" %s \"\n%s\n",
+                        node->token,"Should be of the form {*}\n");
+                    return EXIT_FAILURE;
+                }
                 if (search_dict(labtab, node->token) <= 0)
                     insert_dict(labtab, node->token, i+1);
             }
@@ -284,10 +311,31 @@ int generate_symbol_tables(tree ast, dictionary vartab, dictionary labtab) {
             //      print error info to the user
 
             if (j >= 2) {
-
+                fprintf(stderr, "Token List Overflow: %s\n",
+                    node->token);   
             }
         }   
     }
 
     return EXIT_SUCCESS;
+}
+
+void print_dict(dictionary dict, FILE *out_file, const char *name) {
+    
+    int i;
+    struct entry *item;
+
+    debug_print("@bw", out_file, "\n\n------------------------------------------");
+    debug_print("@bw", out_file, "\n       DICTIONARY  (%s)\n", name);
+    debug_print("@bw", out_file, "------------------------------------------\n\n");
+    
+    for (i = 0; i < dict->size; i++){
+        debug_print("@bw", out_file, "[%5d]\n", i);
+        item = dict->table[i];
+        while (item != NULL) {
+            debug_print("@bw", out_file, "[-----]> (%5d) %s\n",
+                item->value, item->key);
+            item = item->next;
+        }
+    }
 }
