@@ -244,8 +244,14 @@ int generate_symbol_tables(tree ast, dictionary vartab, dictionary labtab) {
             if (j == 0) {
                 if ((get_bool_argcode(node->token) >= 0) ||
                     (get_add_argcode(node->token) >= 0)  ||
-                    (get_mem_argcode(node->token) >= 0)   )
+                    (get_mem_argcode(node->token) >= 0)  ||
+                    (get_reg_argcode(node->token) >= 0)  )
                     continue;
+
+                if (is_token_number(node->token)) {
+                    //printf("Found a Number: %s\n", node->token);
+                    continue;
+                }
 
                 if (is_token_label(node->token)) {
                     if (search_dict(labtab, node->token) == 0)

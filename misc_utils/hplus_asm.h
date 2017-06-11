@@ -132,13 +132,25 @@ enum BITWISE_MEM {
     BIT_MEMRS_RS,
 };
 
-// Gets a token and returns its relevent bitvalues as int
-int get_inst_opcode(char *inst);
-int get_bool_argcode(char *barg);
-int get_add_argcode(char *aarg);
-int get_mem_argcode(char *marg);
+// REGISTER DEFINITIONS
 
-// Check to see if the given token is a label
-int is_token_label(const char *s);
+#define     TOK_B1_REG      "B1"
+#define     TOK_B2_REG      "B2"
+
+enum BITWISE_REG {
+    BIT_B1_REG = 0,
+    BIT_B2_REG,
+};
+
+// Gets a token and returns its relevent bitvalues as int
+int get_inst_opcode(char *token);
+int get_bool_argcode(char *token);
+int get_add_argcode(char *token);
+int get_mem_argcode(char *token);
+int get_reg_argcode(char *token);
+
+// Check to see if the given token is a label/number
+int is_token_label(const char *token);
+int is_token_number(const char *token);
 
 #endif
