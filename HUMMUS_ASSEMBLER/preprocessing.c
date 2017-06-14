@@ -187,8 +187,8 @@ int generate_abstract_syntax_tree(char *buffer, tree ast) {
         else if (ast->children != NULL)
             insert_tree(ast->children[ast->size-1], token);
         else {
-            fprintf(stderr, "%s %s\"%s\"\n", 
-                "First Token expected to be an Instruction",
+            fprintf(stderr, "\n%s %s\"%s\"\n\n", 
+                "ERROR: First Token expected to be an Instruction",
                 ", instead recieved", token);
             return EXIT_FAILURE;
         }
@@ -269,8 +269,6 @@ int generate_symbol_tables(tree ast, dictionary vartab, dictionary labtab) {
 
             if (j == 0) {
                 if ((get_bool_argcode(node->token) >= 0) ||
-                    (get_add_argcode(node->token) >= 0)  ||
-                    (get_mem_argcode(node->token) >= 0)  ||
                     (get_reg_argcode(node->token) >= 0)  ||
                      is_token_number(node->token))
                     continue;

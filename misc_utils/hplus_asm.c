@@ -15,22 +15,28 @@ enum NUM_TYPE{
 
 // Gets a token and returns its relevent bitvalues as int
 int get_inst_opcode(char *token){
-    if (strcmp(token, TOK_HALT)     == 0) return BIT_HALT;
+    if (strcmp(token, TOK_MISC)     == 0) return BIT_MISC;
     if (strcmp(token, TOK_SHFF)     == 0) return BIT_SHFF;
     if (strcmp(token, TOK_SHFB)     == 0) return BIT_SHFB;
-    if (strcmp(token, TOK_BNR)      == 0) return BIT_BNR;
-    if (strcmp(token, TOK_INP)      == 0) return BIT_INP;
-    if (strcmp(token, TOK_STR)      == 0) return BIT_STR;
-    if (strcmp(token, TOK_LDB1)     == 0) return BIT_LDB1;
-    if (strcmp(token, TOK_LDB2)     == 0) return BIT_LDB2;
-    if (strcmp(token, TOK_ADDB1)    == 0) return BIT_ADDB1;
-    if (strcmp(token, TOK_ADDB2)    == 0) return BIT_ADDB2;
+    if (strcmp(token, TOK_BROZ)     == 0) return BIT_BROZ;
+    
+    if (strcmp(token, TOK_SVPC)     == 0) return BIT_SVPC;
+    if (strcmp(token, TOK_UDPC)     == 0) return BIT_UDPC;
+    if (strcmp(token, TOK_LDMY)     == 0) return BIT_LDMY;
+    if (strcmp(token, TOK_LDRG)     == 0) return BIT_LDRG;
+    
+    if (strcmp(token, TOK_CNST)     == 0) return BIT_CNST;
+    if (strcmp(token, TOK_BLSM)     == 0) return BIT_BLSM;
     if (strcmp(token, TOK_BOOL)     == 0) return BIT_BOOL;
-    if (strcmp(token, TOK_ADD)      == 0) return BIT_ADD;
-    if (strcmp(token, TOK_SUBB1)    == 0) return BIT_SUBB1;
-    if (strcmp(token, TOK_SUBB2)    == 0) return BIT_SUBB2;
-    if (strcmp(token, TOK_STM)      == 0) return BIT_STM;
-    if (strcmp(token, TOK_MEM)      == 0) return BIT_MEM;
+    if (strcmp(token, TOK_ADDR)     == 0) return BIT_ADDR;
+    
+    if (strcmp(token, TOK_ADDC)     == 0) return BIT_ADDC;
+    if (strcmp(token, TOK_SUBC)     == 0) return BIT_SUBC;
+    if (strcmp(token, TOK_STMY)     == 0) return BIT_STMY;
+    if (strcmp(token, TOK_STRG)     == 0) return BIT_STRG;
+
+    if (strcmp(token, TOK_VARI)     == 0) return BIT_VARI;
+    
     return -1;
 }
 
@@ -39,52 +45,46 @@ int get_bool_argcode(char *token) {
     if (strcmp(token, TOK_LAND)     == 0) return BIT_LAND;
     if (strcmp(token, TOK_BOR)      == 0) return BIT_BOR;
     if (strcmp(token, TOK_LOR)      == 0) return BIT_LOR;
+    
     if (strcmp(token, TOK_BXOR)     == 0) return BIT_BXOR;
     if (strcmp(token, TOK_BXNOR)    == 0) return BIT_BXNOR;
     if (strcmp(token, TOK_LB1)      == 0) return BIT_LB1;
     if (strcmp(token, TOK_LB2)      == 0) return BIT_LB2;
+    
     if (strcmp(token, TOK_BNAND)    == 0) return BIT_BNAND;
     if (strcmp(token, TOK_LNAND)    == 0) return BIT_LNAND;
     if (strcmp(token, TOK_BNOR)     == 0) return BIT_BNOR;
     if (strcmp(token, TOK_LNOR)     == 0) return BIT_LNOR;
+    
     if (strcmp(token, TOK_NB1)      == 0) return BIT_NB1;
     if (strcmp(token, TOK_NB2)      == 0) return BIT_NB2;
     if (strcmp(token, TOK_RB1)      == 0) return BIT_RB1;
     if (strcmp(token, TOK_RB2)      == 0) return BIT_RB2;
-    return -1;
-}
-
-int get_add_argcode(char *token) {
-    if (strcmp(token, TOK_PB1PB2)   == 0) return BIT_PB1PB2;
-    if (strcmp(token, TOK_PB1NB2)   == 0) return BIT_PB1NB2;
-    if (strcmp(token, TOK_NB1PB2)   == 0) return BIT_NB1PB2;
-    if (strcmp(token, TOK_NB1NB2)   == 0) return BIT_NB1NB2;
-    return -1;
-}
-
-int get_mem_argcode(char *token) {
-    if (strcmp(token, TOK_CLEAR)    == 0) return BIT_CLEAR;
-    if (strcmp(token, TOK_B1_MEMB1) == 0) return BIT_B1_MEMB1;
-    if (strcmp(token, TOK_B1_MEMB2) == 0) return BIT_B1_MEMB2;
-    if (strcmp(token, TOK_B1_MEMRS) == 0) return BIT_B1_MEMRS;
-    if (strcmp(token, TOK_MEMB1_B1) == 0) return BIT_MEMB1_B1;
-    if (strcmp(token, TOK_B2_MEMB1) == 0) return BIT_B2_MEMB1;
-    if (strcmp(token, TOK_B2_MEMB2) == 0) return BIT_B2_MEMB2;
-    if (strcmp(token, TOK_B2_MEMRS) == 0) return BIT_B2_MEMRS;
-    if (strcmp(token, TOK_MEMB1_B2) == 0) return BIT_MEMB1_B2;
-    if (strcmp(token, TOK_MEMB2_B1) == 0) return BIT_MEMB2_B1;
-    if (strcmp(token, TOK_MEMB2_B2) == 0) return BIT_MEMB2_B2;
-    if (strcmp(token, TOK_MEMB2_RS) == 0) return BIT_MEMB2_RS;
-    if (strcmp(token, TOK_MEMB1_RS) == 0) return BIT_MEMB1_RS;
-    if (strcmp(token, TOK_MEMRS_B1) == 0) return BIT_MEMRS_B1;
-    if (strcmp(token, TOK_MEMRS_B2) == 0) return BIT_MEMRS_B2;
-    if (strcmp(token, TOK_MEMRS_RS) == 0) return BIT_MEMRS_RS;
+    
     return -1;
 }
 
 int get_reg_argcode(char *token) {
-    if (strcmp(token, TOK_B1_REG)   == 0) return BIT_B1_REG;
-    if (strcmp(token, TOK_B2_REG)   == 0) return BIT_B2_REG;
+    if (strcmp(token, TOK_R0_REG)   == 0) return BIT_R0_REG;
+    if (strcmp(token, TOK_R1_REG)   == 0) return BIT_R1_REG;
+    if (strcmp(token, TOK_R2_REG)   == 0) return BIT_R2_REG;
+    if (strcmp(token, TOK_R3_REG)   == 0) return BIT_R3_REG;
+    
+    if (strcmp(token, TOK_R4_REG)   == 0) return BIT_R4_REG;
+    if (strcmp(token, TOK_R5_REG)   == 0) return BIT_R5_REG;
+    if (strcmp(token, TOK_R6_REG)   == 0) return BIT_R6_REG;
+    if (strcmp(token, TOK_R7_REG)   == 0) return BIT_R7_REG;
+    
+    if (strcmp(token, TOK_R8_REG)   == 0) return BIT_R8_REG;
+    if (strcmp(token, TOK_R9_REG)   == 0) return BIT_R9_REG;
+    if (strcmp(token, TOK_RA_REG)   == 0) return BIT_RA_REG;
+    if (strcmp(token, TOK_RB_REG)   == 0) return BIT_RB_REG;
+    
+    if (strcmp(token, TOK_RC_REG)   == 0) return BIT_RC_REG;
+    if (strcmp(token, TOK_RD_REG)   == 0) return BIT_RD_REG;
+    if (strcmp(token, TOK_RE_REG)   == 0) return BIT_RE_REG;
+    if (strcmp(token, TOK_RF_REG)   == 0) return BIT_RF_REG;
+    
     return -1;
 }
 

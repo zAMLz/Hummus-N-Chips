@@ -6,40 +6,50 @@
 
 // OPCODE DEFINITIONS
 
-#define     TOK_HALT        "HALT"
+#define     TOK_MISC        "MISC"
 #define     TOK_SHFF        "SHFF"
 #define     TOK_SHFB        "SHFB"
-#define     TOK_BNR         "BNR"
-#define     TOK_INP         "INP"
-#define     TOK_STR         "STR"
-#define     TOK_LDB1        "LDB1"
-#define     TOK_LDB2        "LDB2"
-#define     TOK_ADDB1       "ADDB1"
-#define     TOK_ADDB2       "ADDB2"
+#define     TOK_BROZ        "BROZ"
+
+#define     TOK_SVPC        "SVPC"
+#define     TOK_UDPC        "UDPC"
+#define     TOK_LDMY        "LDMY"
+#define     TOK_LDRG        "LDRG"
+
+#define     TOK_CNST        "CNST"
+#define     TOK_BLSM        "BLSM"
 #define     TOK_BOOL        "BOOL"
-#define     TOK_ADD         "ADD"
-#define     TOK_SUBB1       "SUBB1"
-#define     TOK_SUBB2       "SUBB2"
-#define     TOK_STM         "STM"
-#define     TOK_MEM         "MEM"
+#define     TOK_ADDR        "ADDR"
+
+#define     TOK_ADDC        "ADDC"
+#define     TOK_SUBC        "SUBC"
+#define     TOK_STMY        "STMY"
+#define     TOK_STRG        "STRG"
+
+#define     TOK_VARI        "VARI"
 
 enum BITWISE_ASM {
-    BIT_HALT = 0,
+    BIT_MISC = 0,
     BIT_SHFF,
     BIT_SHFB,
-    BIT_BNR,
-    BIT_INP,
-    BIT_STR,
-    BIT_LDB1,
-    BIT_LDB2,
-    BIT_ADDB1,
-    BIT_ADDB2,
+    BIT_BROZ,
+
+    BIT_SVPC,
+    BIT_UDPC,
+    BIT_LDMY,
+    BIT_LDRG,
+
+    BIT_CNST,
+    BIT_BLSM,
     BIT_BOOL,
-    BIT_ADD,
-    BIT_SUBB1,
-    BIT_SUBB2,
-    BIT_STM,
-    BIT_MEM
+    BIT_ADDR,
+
+    BIT_ADDC,
+    BIT_SUBC,
+    BIT_STMY,
+    BIT_STRG,
+
+    BIT_VARI,
 };
 
 // BOOL DEFINITIONS
@@ -48,14 +58,17 @@ enum BITWISE_ASM {
 #define     TOK_LAND        "LAND"
 #define     TOK_BOR         "BOR"
 #define     TOK_LOR         "LOR"
+
 #define     TOK_BXOR        "BXOR"
 #define     TOK_BXNOR       "BXNOR"
 #define     TOK_LB1         "LB1"
 #define     TOK_LB2         "LB2"
+
 #define     TOK_BNAND       "BNAND"
 #define     TOK_LNAND       "LNAND"
 #define     TOK_BNOR        "BNOR"
 #define     TOK_LNOR        "LNOR"
+
 #define     TOK_NB1         "NB1"
 #define     TOK_NB2         "NB2"
 #define     TOK_RB1         "RB1"
@@ -66,87 +79,70 @@ enum BITWISE_BOOL {
     BIT_LAND,
     BIT_BOR,
     BIT_LOR,
+    
     BIT_BXOR,
     BIT_BXNOR,
     BIT_LB1,
     BIT_LB2,
+    
     BIT_BNAND,
     BIT_LNAND,
     BIT_BNOR,
     BIT_LNOR,
+    
     BIT_NB1,
     BIT_NB2,
     BIT_RB1,
     BIT_RB2,
 };
 
-// ADD DEFINITIONS
-
-#define     TOK_PB1PB2      "B1+B2"
-#define     TOK_PB1NB2      "B1-B2"
-#define     TOK_NB1PB2      "-B1+B2"
-#define     TOK_NB1NB2      "-B1-B2"
-
-enum BITWISE_ADD {
-    BIT_PB1PB2 = 0,
-    BIT_PB1NB2,
-    BIT_NB1PB2,
-    BIT_NB1NB2,
-};
-
-// MEMORY DEFINITIONS
-
-#define     TOK_CLEAR       "CLEAR"
-#define     TOK_B1_MEMB1    "B1<-MEM[B1]"
-#define     TOK_B1_MEMB2    "B1<-MEM[B2]"
-#define     TOK_B1_MEMRS    "B1<-MEM[RS]"
-#define     TOK_MEMB1_B1    "MEM[B1]<-B1"
-#define     TOK_B2_MEMB1    "B2<-MEM[B1]"
-#define     TOK_B2_MEMB2    "B2<-MEM[B2]"
-#define     TOK_B2_MEMRS    "B2<-MEM[RS]"
-#define     TOK_MEMB1_B2    "MEM[B1]<-B2"
-#define     TOK_MEMB2_B1    "MEM[B2]<-B1"
-#define     TOK_MEMB2_B2    "MEM[B2]<-B2"
-#define     TOK_MEMB2_RS    "MEM[B2]<-RS"
-#define     TOK_MEMB1_RS    "MEM[B1]<-RS"
-#define     TOK_MEMRS_B1    "MEM[RS]<-B1"
-#define     TOK_MEMRS_B2    "MEM[RS]<-B2"
-#define     TOK_MEMRS_RS    "MEM[RS]<-RS"
-
-enum BITWISE_MEM {
-    BIT_CLEAR = 0,
-    BIT_B1_MEMB1,
-    BIT_B1_MEMB2,
-    BIT_B1_MEMRS,
-    BIT_MEMB1_B1,
-    BIT_B2_MEMB1,
-    BIT_B2_MEMB2,
-    BIT_B2_MEMRS,
-    BIT_MEMB1_B2,
-    BIT_MEMB2_B1,
-    BIT_MEMB2_B2,
-    BIT_MEMB2_RS,
-    BIT_MEMB1_RS,
-    BIT_MEMRS_B1,
-    BIT_MEMRS_B2,
-    BIT_MEMRS_RS,
-};
-
 // REGISTER DEFINITIONS
 
-#define     TOK_B1_REG      "B1"
-#define     TOK_B2_REG      "B2"
+#define     TOK_R0_REG      "R0"
+#define     TOK_R1_REG      "R1"
+#define     TOK_R2_REG      "R2"
+#define     TOK_R3_REG      "R3"
+
+#define     TOK_R4_REG      "R4"
+#define     TOK_R5_REG      "R5"
+#define     TOK_R6_REG      "R6"
+#define     TOK_R7_REG      "R7"
+
+#define     TOK_R8_REG      "R8"
+#define     TOK_R9_REG      "R9"
+#define     TOK_RA_REG      "RA"
+#define     TOK_RB_REG      "RB"
+
+#define     TOK_RC_REG      "RC"
+#define     TOK_RD_REG      "RD"
+#define     TOK_RE_REG      "RE"
+#define     TOK_RF_REG      "RF"
 
 enum BITWISE_REG {
-    BIT_B1_REG = 0,
-    BIT_B2_REG,
+    BIT_R0_REG = 0,
+    BIT_R1_REG,
+    BIT_R2_REG,
+    BIT_R3_REG,
+    
+    BIT_R4_REG,
+    BIT_R5_REG,
+    BIT_R6_REG,
+    BIT_R7_REG,
+    
+    BIT_R8_REG,
+    BIT_R9_REG,
+    BIT_RA_REG,
+    BIT_RB_REG,
+    
+    BIT_RC_REG,
+    BIT_RD_REG,
+    BIT_RE_REG,
+    BIT_RF_REG,
 };
 
 // Gets a token and returns its relevent bitvalues as int
 int get_inst_opcode(char *token);
 int get_bool_argcode(char *token);
-int get_add_argcode(char *token);
-int get_mem_argcode(char *token);
 int get_reg_argcode(char *token);
 
 // Check to see if the given token is a label/number
