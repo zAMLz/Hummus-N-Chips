@@ -3,6 +3,7 @@
 #define __TREE_CUSTOM_H__
 
 #include <stdio.h>
+#include <stdint.h>
 
 struct node;
 
@@ -12,7 +13,7 @@ typedef struct node *tree;
 // Branchable node
 struct node {
     tree *children;
-    int size;
+    int32_t size;
     char *token;
 };
 

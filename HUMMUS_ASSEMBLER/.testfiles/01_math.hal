@@ -3,13 +3,25 @@
 # Lets create a simple program that utilizes
 # That does mathematical computations
 
-SHFF    {MAIN_PROGRAM}      {LABEL_DECLARATIONS}
-VARI    X       0x05
-VARI    Y       0x3
-VARI    Z       0x0
+SHFF    MAIN_PROGRAM        :LABEL_DECLARATIONS
+VARI    0x05    :X
+VARI    0x3     :Y
+VARI    0x05    :Z
 
-LDMY    $R1     X           {MAIN_PROGRAM}
+LDMY    $R1     X           :MAIN_PROGRAM
 LDMY    $R2     Y
 
+# Clear the registers
 
+BLSM    BXOR
+BOOL    $R3 $R3 $R3
 
+# Add the numbers
+
+ADDR $R3 $R3 $R1            :START_LOOP
+SUBC $R2 $R2 0x_0000_0001
+BROZ START_LOOP
+
+# Save the variable in location Z
+
+STMY $R3 Z

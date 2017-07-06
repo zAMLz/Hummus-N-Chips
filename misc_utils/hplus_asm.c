@@ -85,15 +85,16 @@ int get_reg_argcode(char *token) {
     if (strcmp(token, TOK_RE_REG)   == 0) return BIT_RE_REG;
     if (strcmp(token, TOK_RF_REG)   == 0) return BIT_RF_REG;
     
+    if (strcmp(token, TOK_RX_REG)   == 0) return BIT_RX_REG;
+    
     return -1;
 }
 
 // Check to see if the given token is a label
 int is_token_label(const char *token) {
-    int size = strlen(token);
-    if (size < 3)
+    if (strlen(token) < 2)
         return 0;
-    return (token[0] == '{' && token[size-1] == '}');
+    return token[0] == ':';
 }
 
 // Check to see if the given token is a number constant
@@ -102,6 +103,13 @@ int is_token_number(const char *token) {
     char num_set[25] = "0123456789_";
     char *result;
 
+    // Check negations
+    if (strncmp(token, "-", 1) == 0)
+        token += 1;
+    else if (strncmp(token, "+", 1) == 0)
+        token += 1;
+
+    // Check description set
     if (strncmp(token, "0b", 2) == 0) {
         token += 2;
         strcpy(num_set, "01_");

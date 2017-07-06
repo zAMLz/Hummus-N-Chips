@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <libgen.h>
+#include <stdint.h>
 
 #include "beans_assembler.h"
 #include "preprocessing.h"
@@ -16,6 +17,9 @@
 
 // Once file contents are loaded in, this function processes it
 int preprocess_hal(FILE *hal_file, FILE *hex_file, FILE *log_file);
+
+// Create the hex file from the preprocessed AST.
+int ast_to_hex(FILE *hex_file, tree abstree, dictionary symtab);
 
 // The main function for assembling the language from .hal to .hex
 int assemble_hummus(char *file_name_path) {
@@ -96,6 +100,7 @@ typedef enum PREPROCESS_STATE {
     PP_BUF,
     PP_AST,
     PP_SYM,
+    PP_HEX,
     PP_END,
 } PREP_STATE; 
 int preprocess_hal(FILE *hal_file, FILE *hex_file, FILE *log_file) {
@@ -110,20 +115,17 @@ int preprocess_hal(FILE *hal_file, FILE *hex_file, FILE *log_file) {
 
     // Various data structures of assembling
     tree        abstree = create_tree("__ROOT__");
-    dictionary  vartab  = create_dict();
-    dictionary  labtab  = create_dict();
+    dictionary  symtab  = create_dict();
     
     PREP_STATE PP_STATE = PP_BUF;
     int rstatus = EXIT_SUCCESS;
 
-    if(abstree == NULL || vartab == NULL || labtab == NULL) {
+    if(abstree == NULL || symtab == NULL) {
         fprintf(stderr, "Unable to allocate memory for Necessary Data Structures\n");
         if (abstree != NULL) 
             destroy_tree(abstree);
-        if (vartab != NULL) 
-            destroy_dict(vartab);
-        if (labtab != NULL)
-            destroy_dict(labtab);
+        if (symtab != NULL) 
+            destroy_dict(symtab);
         return EXIT_FAILURE;
     }
     
@@ -137,8 +139,7 @@ int preprocess_hal(FILE *hal_file, FILE *hex_file, FILE *log_file) {
     // Make sure it is alright
     if(buffer == NULL) {
         destroy_tree(abstree);
-        destroy_dict(vartab);
-        destroy_dict(labtab);
+        destroy_dict(symtab);
         fprintf(stderr, "Unable to allocate memory for input file!\n");
         debug_print("@b", stderr, "file-size: %ld", fsize);
         return EXIT_FAILURE;
@@ -152,8 +153,7 @@ int preprocess_hal(FILE *hal_file, FILE *hex_file, FILE *log_file) {
         debug_print("@b", stderr, "file-size: %ld", fsize);
         debug_print("@b", stderr, "fread(): %zu", result);
         destroy_tree(abstree);
-        destroy_dict(vartab);
-        destroy_dict(labtab);
+        destroy_dict(symtab);
         free(buffer);
         return EXIT_FAILURE;
     }
@@ -204,9 +204,20 @@ int preprocess_hal(FILE *hal_file, FILE *hex_file, FILE *log_file) {
                 // variables are any unrecognized string seperated by spaces.
                 // Make sure to not utilize primary tokens.
 
-                rstatus = rstatus | generate_symbol_tables(abstree, vartab, labtab);
-                print_dict(vartab, log_file, "VARIABLE TABLE");
-                print_dict(labtab, log_file, "LABEL TABLE");
+                rstatus = rstatus | generate_symbol_tables(abstree, symtab);
+                print_dict(symtab, log_file);
+                PP_STATE = PP_END;
+
+                break;
+
+            case PP_HEX:
+
+                // At this stage, we know have processed the symbol table
+                // and we have obtained our abstract syntax tree.
+                // Using these two data structures, we can now go through
+                // the whole AST and evaluate the hexadecimal representation
+
+                rstatus = rstatus | ast_to_hex(hex_file, abstree, symtab);
                 PP_STATE = PP_END;
 
                 break;
@@ -219,16 +230,29 @@ int preprocess_hal(FILE *hal_file, FILE *hex_file, FILE *log_file) {
     }
 
     // Free all data structures and return
-    hex_file = hex_file;        // For the annoying warning message
     destroy_tree(abstree);
-    destroy_dict(vartab);
-    destroy_dict(labtab);
+    destroy_dict(symtab);
     free(buffer);
     return rstatus;
 }
 
 
 
+int ast_to_hex(FILE *hex_file, tree abstree, dictionary symtab) {
+    
+    /*
+        Place some intelligent comment here
+    */
+    
+    hex_file = hex_file;
+    abstree = abstree;
+    symtab = symtab;
+
+    int32_t *buffer = malloc(sizeof(int32_t)*abstree->size);
+    free(buffer);
+
+    return EXIT_SUCCESS;
+}
 
 
 

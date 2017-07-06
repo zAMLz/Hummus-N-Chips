@@ -26,8 +26,8 @@ void print_tree(tree tr, FILE *out_file);
 // Parse the relevent variables and labels and store them 
 // into the variable and symbol tables by traversing the
 // abstract syntax tree
-int generate_symbol_tables(tree ast, dictionary vartab, dictionary labtab);
-void print_dict(dictionary dict, FILE *out_file, const char *name);
+int generate_symbol_tables(tree ast, dictionary symtab);
+void print_dict(dictionary dict, FILE *out_file);
 
 
 #endif

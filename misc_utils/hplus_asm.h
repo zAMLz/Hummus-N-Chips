@@ -98,25 +98,27 @@ enum BITWISE_BOOL {
 
 // REGISTER DEFINITIONS
 
-#define     TOK_R0_REG      "R0"
-#define     TOK_R1_REG      "R1"
-#define     TOK_R2_REG      "R2"
-#define     TOK_R3_REG      "R3"
+#define     TOK_R0_REG      "$R0"
+#define     TOK_R1_REG      "$R1"
+#define     TOK_R2_REG      "$R2"
+#define     TOK_R3_REG      "$R3"
 
-#define     TOK_R4_REG      "R4"
-#define     TOK_R5_REG      "R5"
-#define     TOK_R6_REG      "R6"
-#define     TOK_R7_REG      "R7"
+#define     TOK_R4_REG      "$R4"
+#define     TOK_R5_REG      "$R5"
+#define     TOK_R6_REG      "$R6"
+#define     TOK_R7_REG      "$R7"
 
-#define     TOK_R8_REG      "R8"
-#define     TOK_R9_REG      "R9"
-#define     TOK_RA_REG      "RA"
-#define     TOK_RB_REG      "RB"
+#define     TOK_R8_REG      "$R8"
+#define     TOK_R9_REG      "$R9"
+#define     TOK_RA_REG      "$RA"
+#define     TOK_RB_REG      "$RB"
 
-#define     TOK_RC_REG      "RC"
-#define     TOK_RD_REG      "RD"
-#define     TOK_RE_REG      "RE"
-#define     TOK_RF_REG      "RF"
+#define     TOK_RC_REG      "$RC"
+#define     TOK_RD_REG      "$RD"
+#define     TOK_RE_REG      "$RE"
+#define     TOK_RF_REG      "$RF"
+
+#define     TOK_RX_REG      "$RX"
 
 enum BITWISE_REG {
     BIT_R0_REG = 0,
@@ -138,6 +140,8 @@ enum BITWISE_REG {
     BIT_RD_REG,
     BIT_RE_REG,
     BIT_RF_REG,
+
+    BIT_RX_REG,
 };
 
 // Gets a token and returns its relevent bitvalues as int

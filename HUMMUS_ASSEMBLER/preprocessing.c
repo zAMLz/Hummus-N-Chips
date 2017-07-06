@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
 
 #include "preprocessing.h"
 #include "tree.h"
@@ -199,7 +200,7 @@ int generate_abstract_syntax_tree(char *buffer, tree ast) {
 }
 
 void print_tree_rec(tree tr, FILE *out_file, int depth) {
-    int i;
+    int32_t i;
     for(i = 0; i < depth; i++)
         debug_print("@bw", out_file, " |   ");
     debug_print("@bw", out_file, "%s\n", tr->token);
@@ -208,7 +209,7 @@ void print_tree_rec(tree tr, FILE *out_file, int depth) {
 }
 
 void print_tree(tree tr, FILE *out_file) {
-    int i;
+    int32_t i;
     debug_print("@bw", out_file, "\n\n------------------------------------------");
     debug_print("@bw", out_file, "\n\t    ABSTRACT SYNTAX TREE\n");
     debug_print("@bw", out_file, "------------------------------------------\n\n");
@@ -234,7 +235,7 @@ void print_tree(tree tr, FILE *out_file) {
 
 // Parse the relevent variables and labels and store them 
 // into the variable and label tables
-int generate_symbol_tables(tree ast, dictionary vartab, dictionary labtab) {
+int generate_symbol_tables(tree ast, dictionary symtab) {
     /*
         We can assume that every child of the incoming ast is
         an instruction because of absree_dfa(). Thus we will
@@ -242,8 +243,7 @@ int generate_symbol_tables(tree ast, dictionary vartab, dictionary labtab) {
         and relevant labels.
     */
 
-    int i, j;
-    int vaddr = 1;  // Virtual Address
+    int32_t i, j;
     tree node;
 
     // The size variable guarantees that we only
@@ -252,79 +252,50 @@ int generate_symbol_tables(tree ast, dictionary vartab, dictionary labtab) {
         for (j = 0; j < ast->children[i]->size; j++) {
             
             node = ast->children[i]->children[j];
-
-            // CASE ZERO
-            //      Variables are added to the variable table
-            //      if it does not exist before. It is stored
-            //      in the variable table with a virtual address
-            //
-            //      Labels are added to the label table if it
-            //      does not exist before but it stores the
-            //      location as negative since a label in position
-            //      zero is simply a requesting the location of the
-            //      real label. I.E. When we finish this process,
-            //      an negative numbers in the label table
-            //      imply that they were referenced but do not
-            //      exist. 
-
-            if (j == 0) {
-                if ((get_bool_argcode(node->token) >= 0) ||
-                    (get_reg_argcode(node->token) >= 0)  ||
-                     is_token_number(node->token))
-                    continue;
-
-                if (is_token_label(node->token)) {
-                    if (search_dict(labtab, node->token) == 0)
-                        insert_dict(labtab, node->token, -1*(i+1));
-                    continue;
-                }
-
-                if (search_dict(vartab, node->token) == 0)
-                    insert_dict(vartab, node->token, vaddr++);
-            }
             
-            // CASE ONE
-            //      Only Label definitions are allowed here.
-            //      If encountered, we must add the label
-            //      to the label table if it does not exist
-            //      or it has a value less than or equal to
-            //      zero. For all other tokens present here,
-            //      we throw errors. If multiple declarations
-            //      of the same label are present throw errors.
-
-            if (j == 1) {
-                if (!is_token_label(node->token)) {
-                    fprintf(stderr, "Expected a label, got \" %s \"\n%s\n",
-                        node->token,"Should be of the form {*}\n");
-                    return EXIT_FAILURE;
+            if (is_token_label(node->token)) {
+                if (search_dict(symtab, node->token+1) <= 0)
+                    insert_dict(symtab, node->token+1, i+1);
+                else{
+                    fprintf(stderr, "\n%s%s%s (%d)\n\n", 
+                    "ERROR: Multiple Label definitions:",
+                    "\n\tlabel -> \"", node->token, i+1);
                 }
-                if (search_dict(labtab, node->token) <= 0)
-                    insert_dict(labtab, node->token, i+1);
             }
 
-            // CASE TWO
-            //      Case Two contains nodes that should not
-            //      exist normally. We will terminate the
-            //      function should we encounter it and 
-            //      print error info to the user
+            else if ((get_bool_argcode(node->token) >= 0) ||
+                (get_reg_argcode(node->token) >= 0)  ||
+                (is_token_number(node->token) > 0) )
+                continue;
 
-            if (j >= 2) {
-                fprintf(stderr, "Token List Overflow: %s\n",
-                    node->token);   
-            }
+            else if (search_dict(symtab, node->token) == 0)
+                    insert_dict(symtab, node->token, -1*(i+1));
         }   
+    }
+
+    struct entry *item;
+    for (i = 0; i < symtab->size; i++) {
+        item = symtab->table[i];
+        while (item != NULL) {
+            if (item->value < 0) {
+                fprintf(stderr, "\n%s%s%s (%d)\n\n", 
+                "WARNING: Label found with no predefined address:",
+                "\n\tlabel -> \"", item->key, -1*item->value);
+            }
+            item = item->next;
+        }
     }
 
     return EXIT_SUCCESS;
 }
 
-void print_dict(dictionary dict, FILE *out_file, const char *name) {
+void print_dict(dictionary dict, FILE *out_file) {
     
     int i;
     struct entry *item;
 
     debug_print("@bw", out_file, "\n\n------------------------------------------");
-    debug_print("@bw", out_file, "\n       DICTIONARY  (%s)\n", name);
+    debug_print("@bw", out_file, "\n       DICTIONARY  (SYMBOL TABLE)\n");
     debug_print("@bw", out_file, "------------------------------------------\n\n");
     
     for (i = 0; i < dict->size; i++){

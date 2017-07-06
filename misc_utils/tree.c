@@ -11,14 +11,15 @@
 // Initialize the branchable list
 tree create_tree(const char *token) {
     tree tr;
-    tr = malloc(sizeof(tree));
+    tr = malloc(sizeof(*tr));
+
     if (tr == 0)
         return NULL;
 
     tr->children = NULL;
     tr->size = 0;
 
-    tr->token = malloc(sizeof(char *)*strlen(token));
+    tr->token = malloc(sizeof(char)*(strlen(token)+1));
     if (tr->token == 0) {
         free(tr);
         return NULL;
@@ -46,7 +47,7 @@ int insert_tree(tree tr, const char *token) {
     }
     else {
         tree *newchilds = malloc(sizeof(tree)*(tr->size+1));
-        int i;
+        int32_t i;
         for (i = 0; i < tr->size; i++) {
             newchilds[i] = tr->children[i];
         }
@@ -61,9 +62,11 @@ int insert_tree(tree tr, const char *token) {
 void destroy_tree(tree tr){
     if (tr == NULL)
         return;
-    for (int i = 0; i < tr->size; i++) 
+    for (int32_t i = 0; i < tr->size; i++) 
         destroy_tree(tr->children[i]);
-    free(tr->children);
-    free(tr->token);
+    if (tr->children != NULL)
+        free(tr->children);
+    if (tr->token != NULL)
+        free(tr->token);
     free(tr);
 }
