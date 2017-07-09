@@ -25,3 +25,5 @@ BROZ START_LOOP
 # Save the variable in location Z
 
 STMY $R3 Z
+
+MISC 0x0

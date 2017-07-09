@@ -308,3 +308,99 @@ void print_dict(dictionary dict, FILE *out_file) {
         }
     }
 }
+
+/*
+ _   _ _______  _____ _______   __
+| | | | ____\ \/ /_ _|  ___\ \ / /
+| |_| |  _|  \  / | || |_   \ V / 
+|  _  | |___ /  \ | ||  _|   | |  
+|_| |_|_____/_/\_\___|_|     |_|  
+                                  
+*/
+
+// This function must simply takes only a single number.
+// FORMAT; $(inst) $(number) $(label_1, label_2, ...)
+int hex_inst_num (int32_t *inst, tree inst_tree, int resolution, int sign) {
+
+    int found_num = 0;
+    char *token;
+
+    for (int32_t i = 0; i < inst_tree->size; i++) {
+        
+        token = inst_tree->children[i]->token;
+
+        // IF the token is a label, we ignore it. We simply wish
+        // to find the first number. If we don't find a number or
+        // a secondary number is found, throw an error
+        if (is_token_label(token))
+            continue;
+        else if (is_token_number(token) && found_num == 0) {
+            found_num = 1;
+            *inst = *inst + conv_token_number(token, resolution, sign);
+        }
+        else {
+            return EXIT_FAILURE;
+        }
+    }
+    if (found_num == 0)
+        return EXIT_FAILURE;
+    return EXIT_SUCCESS;
+}
+
+// This function has two options. Single argument number or label.
+// FORMAT; $(inst) $(number) $(label_1, label_2, ...)
+// FORMAT; $(inst) $(label_arg) $(label_1, label_2, ...)
+int hex_inst_numlabel ( int32_t *inst, tree inst_tree, int resolution, int sign,
+                        int32_t pc, dictionary symtab, int forwards, int inverse) {
+
+    int found_numlabel = 0;
+    char *token;
+
+    for (int32_t i = 0; i < inst_tree->size; i++) {
+
+        token = inst_tree->children[i]->token;
+
+        // If the token is a label, we ignore it. We simply wish to find
+        // the furst number or arglabel.
+        if (is_token_label(token))
+            continue;
+        else if (is_token_number(token) && found_numlabel == 0) {
+            found_numlabel = 1;
+            *inst = *inst + conv_token_number(token, resolution, sign);
+        }
+        else if (search_dict(symtab, token) > 0 && found_numlabel == 0) {
+            found_numlabel = 1;
+            *inst = *inst + label_dist(pc, search_dict(symtab, token), 
+                                        resolution, forwards, inverse);
+        }
+        else {
+            return EXIT_FAILURE;
+        }
+    }
+    if (found_numlabel == 0)
+        return EXIT_FAILURE;
+    return EXIT_SUCCESS;
+}
+
+
+// Calculate relative label distance.
+// Add some better error checking here!!!
+int32_t label_dist(int32_t pc, int32_t label, int resolution, 
+                    int forwards, int inverse) {
+    int32_t dist = label - pc;
+    if (inverse > 0)
+        dist *= -1;
+    if (forwards > 0 && dist < 0) {
+        fprintf(stderr, "Waring: (@%d) %s %s", pc,
+                        "Instruction is bounded by reference direction",
+                        "yet actual reference is in a different direction!\n");
+    }
+
+    int32_t mask = 0x0;
+
+    for (int i = 0; i < resolution; i++)
+        mask = (mask+1) << 1;
+    mask = mask >> 1;
+    
+    return mask & dist;
+}

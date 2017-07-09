@@ -135,3 +135,12 @@ int is_token_number(const char *token) {
 
     return i != 0 && i == strlen(token);
 }
+
+// Actually convert a token to its binary representation
+// following the specifications from the parameter
+int32_t conv_token_number(const char *token, int resolution, int sign){
+    token=token;
+    resolution=resolution;
+    sign=sign;
+    return (int32_t) 31;
+}

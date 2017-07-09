@@ -153,4 +153,6 @@ int get_reg_argcode(char *token);
 int is_token_label(const char *token);
 int is_token_number(const char *token);
 
+// Universal number convertor.
+int32_t conv_token_number(const char *token, int resolution, int sign);
 #endif

@@ -19,7 +19,7 @@
 int preprocess_hal(FILE *hal_file, FILE *hex_file, FILE *log_file);
 
 // Create the hex file from the preprocessed AST.
-int ast_to_hex(FILE *hex_file, tree abstree, dictionary symtab);
+int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab);
 
 // The main function for assembling the language from .hal to .hex
 int assemble_hummus(char *file_name_path) {
@@ -206,7 +206,7 @@ int preprocess_hal(FILE *hal_file, FILE *hex_file, FILE *log_file) {
 
                 rstatus = rstatus | generate_symbol_tables(abstree, symtab);
                 print_dict(symtab, log_file);
-                PP_STATE = PP_END;
+                PP_STATE = PP_HEX;
 
                 break;
 
@@ -217,7 +217,7 @@ int preprocess_hal(FILE *hal_file, FILE *hex_file, FILE *log_file) {
                 // Using these two data structures, we can now go through
                 // the whole AST and evaluate the hexadecimal representation
 
-                rstatus = rstatus | ast_to_hex(hex_file, abstree, symtab);
+                rstatus = rstatus | ast_to_hex(hex_file, log_file, abstree, symtab);
                 PP_STATE = PP_END;
 
                 break;
@@ -237,21 +237,143 @@ int preprocess_hal(FILE *hal_file, FILE *hex_file, FILE *log_file) {
 }
 
 
+void print_in_bin(int32_t inst, FILE *out_file, const char* token) {
+    int32_t mask = 0;
+    debug_print("@bw", out_file,"[%s] %08x", token, inst);
+    debug_print("@bw", out_file, " [");
+    for (int i = 0; i < 32; i++) {
+        mask = 0x80000000 >> i;
+        mask = mask & inst;
+        mask = mask >> (31 - i);
+        debug_print("@bw", out_file, "%d", mask);
+    }
+    debug_print("@bw", out_file, "]\n");
+}
 
-int ast_to_hex(FILE *hex_file, tree abstree, dictionary symtab) {
+int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) {
     
     /*
         Place some intelligent comment here
     */
     
+    // This is to spoof the compiler warnings.
     hex_file = hex_file;
     abstree = abstree;
     symtab = symtab;
+    int rstatus = EXIT_SUCCESS;
 
-    int32_t *buffer = malloc(sizeof(int32_t)*abstree->size);
-    free(buffer);
+    // This will be the output buffer that contains the 
+    int32_t *instruction = malloc(sizeof(int32_t));
+    if (instruction == NULL)
+        return EXIT_FAILURE;
 
-    return EXIT_SUCCESS;
+    // These are other variables that need to be passed to the 
+    // hex functions.
+
+    // Encode each command into its binary equivalent.
+    // To understand why each case calls its respective functions,
+    // check the asm.spec file to see the syntax for the
+    // assembly instruction. Look at preprocessing.c to understand
+    // futher what is happening
+
+    debug_print("@bw", out_file, "\n\n------------------------------------------");
+    debug_print("@bw", out_file, "\n       HEXADECIMAL CONVERSION\n");
+    debug_print("@bw", out_file, "------------------------------------------\n\n");
+
+    for(int32_t i = 0; i < abstree->size; i++) { // pc ---> program counter
+        switch(get_inst_opcode(abstree->children[i]->token)) {
+            
+            case BIT_MISC:
+                *instruction = 0x00000000;
+                rstatus = hex_inst_num( instruction, 
+                                        abstree->children[i],
+                                        28, UNSIGNED);
+                print_in_bin(*instruction, out_file, abstree->children[i]->token);
+                /* FILE IO HERE */
+                break;
+            
+            case BIT_SHFF:
+                *instruction = 0x10000000;
+                rstatus = hex_inst_numlabel(instruction,
+                                            abstree->children[i],
+                                            28, UNSIGNED, i+1, symtab, 
+                                            FORCE_DIRECTION,
+                                            NO_INVERSE);
+                print_in_bin(*instruction, out_file, abstree->children[i]->token);
+                /* FILE IO HERE */
+                break;
+            
+            case BIT_SHFB:
+                *instruction = 0x20000000;
+                rstatus = hex_inst_numlabel(instruction,
+                                            abstree->children[i],
+                                            28, UNSIGNED, i+1, symtab, 
+                                            FORCE_DIRECTION, 
+                                            INVERSE);
+                print_in_bin(*instruction, out_file, abstree->children[i]->token);
+                /* FILE IO HERE */
+                break;
+            
+            case BIT_BROZ:
+                *instruction = 0x30000000;
+                rstatus = hex_inst_numlabel(instruction,
+                                            abstree->children[i],
+                                            28, SIGNED, i+1, symtab, 
+                                            ANY_DIRECTION, 
+                                            NO_INVERSE);
+                print_in_bin(*instruction, out_file, abstree->children[i]->token);
+                /* FILE IO HERE */
+                break;
+            
+            case BIT_SVPC:
+                break;
+            
+            case BIT_UDPC:
+                break;
+            
+            case BIT_LDMY:
+                break;
+            
+            case BIT_LDRG:
+                break;
+            
+            case BIT_CNST:
+                break;
+            
+            case BIT_BLSM:
+                break;
+            
+            case BIT_BOOL:
+                break;
+            
+            case BIT_ADDR:
+                break;
+            
+            case BIT_ADDC:
+                break;
+            
+            case BIT_SUBC:
+                break;
+            
+            case BIT_STMY:
+                break;
+            
+            case BIT_STRG:
+                break;
+            
+            case BIT_VARI:
+                break;
+            
+            default:
+                break;
+        }
+        if (rstatus == EXIT_FAILURE)
+            break;   
+    }
+
+    // Free the made binary buffer.
+    free(instruction);
+    return rstatus;
 }
 
 

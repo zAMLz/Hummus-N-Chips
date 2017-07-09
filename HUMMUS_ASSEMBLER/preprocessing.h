@@ -29,5 +29,24 @@ void print_tree(tree tr, FILE *out_file);
 int generate_symbol_tables(tree ast, dictionary symtab);
 void print_dict(dictionary dict, FILE *out_file);
 
+// Here are various functions exist to convert the 
+// Assembly tokens into their respective hexademical
+// values.
+int hex_inst_num (int32_t *inst, tree inst_tree, int resolution, int sign);
+int hex_inst_numlabel ( int32_t *inst, tree inst_tree, int resolution, int sign,
+                        int32_t pc, dictionary symtab, int forwards, int inverse);
+
+
+int32_t label_dist(int32_t pc, int32_t label, int resolution, 
+                    int forwards, int inverse);
+
+#define SIGNED 1
+#define UNSIGNED 0
+
+#define FORCE_DIRECTION 1
+#define ANY_DIRECTION 0
+
+#define INVERSE 1
+#define NO_INVERSE 0
 
 #endif
