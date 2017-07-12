@@ -261,6 +261,7 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
     abstree = abstree;
     symtab = symtab;
     int rstatus = EXIT_SUCCESS;
+    int regx = 0;   // Last Used Register
 
     // This will be the output buffer that contains the 
     int32_t *instruction = malloc(sizeof(int32_t));
@@ -287,7 +288,8 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                 *instruction = 0x00000000;
                 rstatus = hex_inst_num( instruction, 
                                         abstree->children[i],
-                                        28, UNSIGNED);
+                                        28, // Resolution 
+                                        UNSIGNED);
                 print_in_bin(*instruction, out_file, abstree->children[i]->token);
                 /* FILE IO HERE */
                 break;
@@ -296,7 +298,10 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                 *instruction = 0x10000000;
                 rstatus = hex_inst_numlabel(instruction,
                                             abstree->children[i],
-                                            28, UNSIGNED, i+1, symtab, 
+                                            28, // Resolution 
+                                            UNSIGNED, 
+                                            i+1, // Program Counter
+                                            symtab, 
                                             FORCE_DIRECTION,
                                             NO_INVERSE);
                 print_in_bin(*instruction, out_file, abstree->children[i]->token);
@@ -307,7 +312,10 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                 *instruction = 0x20000000;
                 rstatus = hex_inst_numlabel(instruction,
                                             abstree->children[i],
-                                            28, UNSIGNED, i+1, symtab, 
+                                            28, // Resolution 
+                                            UNSIGNED, 
+                                            i+1, // Program Counter
+                                            symtab, 
                                             FORCE_DIRECTION, 
                                             INVERSE);
                 print_in_bin(*instruction, out_file, abstree->children[i]->token);
@@ -318,7 +326,10 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                 *instruction = 0x30000000;
                 rstatus = hex_inst_numlabel(instruction,
                                             abstree->children[i],
-                                            28, SIGNED, i+1, symtab, 
+                                            28, // Resolution
+                                            SIGNED, 
+                                            i+1, // Program Counter 
+                                            symtab, 
                                             ANY_DIRECTION, 
                                             NO_INVERSE);
                 print_in_bin(*instruction, out_file, abstree->children[i]->token);
@@ -326,15 +337,57 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                 break;
             
             case BIT_SVPC:
+                *instruction = 0x40000000;
+                rstatus = hex_inst_numlabel_reg (instruction, 
+                                                 abstree->children[i], 
+                                                 24, // Resolution 
+                                                 SIGNED, 
+                                                 i+1, // Program Counter 
+                                                 symtab, 
+                                                 ANY_DIRECTION, 
+                                                 NO_INVERSE, 
+                                                 &regx /* Previous Register */);
+                print_in_bin(*instruction, out_file, abstree->children[i]->token);
+                /* FILE IO HERE */
                 break;
             
             case BIT_UDPC:
+                *instruction = 0x50000000;
+                rstatus = hex_inst_numlabel_reg (instruction, 
+                                                 abstree->children[i], 
+                                                 24, // Resolution 
+                                                 SIGNED, 
+                                                 i+1, // Program Counter 
+                                                 symtab, 
+                                                 ANY_DIRECTION, 
+                                                 NO_INVERSE, 
+                                                 &regx /* Previous Register */);
+                print_in_bin(*instruction, out_file, abstree->children[i]->token);
+                /* FILE IO HERE */
                 break;
             
             case BIT_LDMY:
+                *instruction = 0x60000000;
+                rstatus = hex_inst_numlabel_reg (instruction, 
+                                                 abstree->children[i], 
+                                                 24, // Resolution 
+                                                 SIGNED, 
+                                                 i+1, // Program Counter 
+                                                 symtab, 
+                                                 ANY_DIRECTION, 
+                                                 NO_INVERSE, 
+                                                 &regx /* Previous Register */);
+                print_in_bin(*instruction, out_file, abstree->children[i]->token);
+                /* FILE IO HERE */
                 break;
             
             case BIT_LDRG:
+                *instruction = 0x70000000;
+                rstatus = hex_inst_reg_reg_reg (instruction,
+                                                abstree->children[i],
+                                                &regx /* Previous Register */);
+                print_in_bin(*instruction, out_file, abstree->children[i]->token);
+                /* FILE IO HERE */
                 break;
             
             case BIT_CNST:

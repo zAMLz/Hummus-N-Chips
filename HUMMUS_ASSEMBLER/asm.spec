@@ -23,6 +23,7 @@
     optimize the instruction set. (Fixed Size: 32 bits)
 
     0b_0000_0000_0000_0000_0000_0000_0000_0000
+    0x_0000_0000
 
     Many staple features (or lack of features) of the old Hummus
     will be present in the new iteration as well. This includes the
@@ -75,7 +76,7 @@ BROZ    0 0 1 1     The Branch on Zero Instruction: (+LABEL)
                             Ex: BROZ xFFFF_FF0F
                                 [ if ($RX == 0) PC += signed(0xFF0F); ]
 
-SVPC    0 1 0 0     The Save Program Counter Instruction:
+SVPC    0 1 0 0     The Save Program Counter Instruction: (+LABEL)
                         The instruction saves the value of the program
                         counter into a register of choice. The remaining
                         argument bits can be used to specify any signed
@@ -84,7 +85,7 @@ SVPC    0 1 0 0     The Save Program Counter Instruction:
                             Ex: SVPC $RF 0x02
                                 [ $RF = $PC + 0x02; ]
 
-UDPC    0 1 0 1     The Update Program Counter Instruction:
+UDPC    0 1 0 1     The Update Program Counter Instruction: (+LABEL)
                         The instruction saves the value of the specified
                         register into a the program counter while applying
                         any signed offset.

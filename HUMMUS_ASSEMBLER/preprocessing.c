@@ -404,3 +404,90 @@ int32_t label_dist(int32_t pc, int32_t label, int resolution,
     
     return mask & dist;
 }
+
+// This function must take a register and a number value
+// FORMAT; $(inst) $(register) $(number) $(label_1, label_2, ...)
+int hex_inst_numlabel_reg ( int32_t *inst, tree inst_tree, int resolution, 
+                            int sign, int32_t pc, dictionary symtab, 
+                            int forwards, int inverse, int *regx) {
+
+    int found_numlabel = 0;
+    int found_reg = 0;
+    char *token;
+
+    for (int32_t i = 0; i < inst_tree->size; i++) {
+
+        token = inst_tree->children[i]->token;
+
+        // If the token is a label, we ignore it. We simply wish to find
+        // the furst number or arglabel.
+        if (is_token_label(token))
+            continue;
+        else if (is_token_number(token) && found_numlabel == 0) {
+            found_numlabel = 1;
+            *inst = *inst + conv_token_number(token, resolution, sign);
+        }
+        else if (search_dict(symtab, token) > 0 && found_numlabel == 0) {
+            found_numlabel = 1;
+            *inst = *inst + label_dist(pc, search_dict(symtab, token), 
+                                        resolution, forwards, inverse);
+        }
+        else if (get_reg_argcode(token) != -1 && found_reg == 0) {
+            found_reg = 1;
+            if (get_reg_argcode(token) != 16) {
+                *inst = (0xF0FFFFFF & *inst) + 
+                        (((int32_t)get_reg_argcode(token)) << resolution);
+                *regx = get_reg_argcode(token);
+            }
+            else {
+                *inst = (0xF0FFFFFF & *inst) + (((int32_t) *regx) << resolution);
+            }
+        }
+        else {
+            return EXIT_FAILURE;
+        }
+    }
+    if (found_numlabel == 0 || found_reg == 0)
+        return EXIT_FAILURE;
+    return EXIT_SUCCESS;
+}
+
+
+// This instruction must take a 3 registers and a number value
+// FORMAT; $(inst) $(register, register, register) $(label_1, label_2, ...)
+int hex_inst_reg_reg_reg ( int32_t *inst, tree inst_tree, int *regx) {
+
+    int found_reg = 0;
+    int reg_temp = *regx;
+    char *token;
+
+    for (int32_t i = 0; i < inst_tree->size; i++) {
+
+        token = inst_tree->children[i]->token;
+
+        // If the token is a label, we ignore it. We simply wish to find
+        // the furst number or arglabel.
+        if (is_token_label(token))
+            continue;
+        else if (get_reg_argcode(token) != -1 && found_reg < 3) {
+
+            if (get_reg_argcode(token) != 16) {
+                *inst = *inst + 
+                        (((int32_t)get_reg_argcode(token)) << (24 - (4*found_reg)));
+                if (found_reg == 0)
+                    reg_temp = get_reg_argcode(token);
+            }
+            else {
+                *inst = *inst + (((int32_t) *regx) << (24 - (4*found_reg)));
+            }            
+            found_reg++;
+        }
+        else {
+            return EXIT_FAILURE;
+        }
+    }
+    *regx = reg_temp;
+    if (found_reg < 3)
+        return EXIT_FAILURE;
+    return EXIT_SUCCESS;
+}
