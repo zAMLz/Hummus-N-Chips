@@ -33,17 +33,16 @@ void print_dict(dictionary dict, FILE *out_file);
 // Assembly tokens into their respective hexademical
 // values.
 int hex_inst_num (int32_t *inst, tree inst_tree, int resolution, int sign);
-
+int hex_inst_bool (int32_t *inst, tree inst_tree);
 int hex_inst_numlabel ( int32_t *inst, tree inst_tree, int resolution, int sign,
                         int32_t pc, dictionary symtab, int forwards, int inverse);
-
 int hex_inst_numlabel_reg ( int32_t *inst, tree inst_tree, int resolution, 
                             int sign, int32_t pc, dictionary symtab, 
-                            int forwards, int inverse, int *regx);
-
+                            int forwards, int inverse, int *regx, int yes_label);
 int hex_inst_reg_reg_reg ( int32_t *inst, tree inst_tree, int *regx);
+int hex_inst_reg_reg_num ( int32_t *inst, tree inst_tree, int *regx);
 
-
+// Calculate relative label distances
 int32_t label_dist(int32_t pc, int32_t label, int resolution, 
                     int forwards, int inverse);
 
@@ -55,5 +54,8 @@ int32_t label_dist(int32_t pc, int32_t label, int resolution,
 
 #define INVERSE 1
 #define NO_INVERSE 0
+
+#define ALLOW_LABEL 1
+#define NO_LABEL 0
 
 #endif

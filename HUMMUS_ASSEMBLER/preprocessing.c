@@ -339,11 +339,46 @@ int hex_inst_num (int32_t *inst, tree inst_tree, int resolution, int sign) {
             *inst = *inst + conv_token_number(token, resolution, sign);
         }
         else {
+            fprintf(stderr, "\nUnidentified Token Found %s\n", token);
             return EXIT_FAILURE;
         }
     }
-    if (found_num == 0)
+    if (found_num == 0){
+        fprintf(stderr, "\nNumber argument is missing!\n");    
         return EXIT_FAILURE;
+    }
+    return EXIT_SUCCESS;
+}
+
+// This function must simply takes only a single number.
+// FORMAT; $(inst) $(number) $(label_1, label_2, ...)
+int hex_inst_bool (int32_t *inst, tree inst_tree) {
+
+    int found_bool = 0;
+    char *token;
+
+    for (int32_t i = 0; i < inst_tree->size; i++) {
+        
+        token = inst_tree->children[i]->token;
+
+        // IF the token is a label, we ignore it. We simply wish
+        // to find the first number. If we don't find a number or
+        // a secondary number is found, throw an error
+        if (is_token_label(token))
+            continue;
+        else if (get_bool_argcode(token) != -1 && found_bool == 0) {
+            found_bool = 1;
+            *inst = *inst + (int32_t)get_bool_argcode(token);
+        }
+        else {
+            fprintf(stderr, "\nUnidentified Token Found %s\n", token);
+            return EXIT_FAILURE;
+        }
+    }
+    if (found_bool == 0){
+        fprintf(stderr, "\nBoolean argument is missing!\n");    
+        return EXIT_FAILURE;
+    }
     return EXIT_SUCCESS;
 }
 
@@ -374,42 +409,22 @@ int hex_inst_numlabel ( int32_t *inst, tree inst_tree, int resolution, int sign,
                                         resolution, forwards, inverse);
         }
         else {
+            fprintf(stderr, "\nUnidentified Token Found %s\n", token);
             return EXIT_FAILURE;
         }
     }
-    if (found_numlabel == 0)
+    if (found_numlabel == 0){
+        fprintf(stderr, "\nNumber/Label argument is missing!\n");    
         return EXIT_FAILURE;
-    return EXIT_SUCCESS;
-}
-
-
-// Calculate relative label distance.
-// Add some better error checking here!!!
-int32_t label_dist(int32_t pc, int32_t label, int resolution, 
-                    int forwards, int inverse) {
-    int32_t dist = label - pc;
-    if (inverse > 0)
-        dist *= -1;
-    if (forwards > 0 && dist < 0) {
-        fprintf(stderr, "Waring: (@%d) %s %s", pc,
-                        "Instruction is bounded by reference direction",
-                        "yet actual reference is in a different direction!\n");
     }
-
-    int32_t mask = 0x0;
-
-    for (int i = 0; i < resolution; i++)
-        mask = (mask+1) << 1;
-    mask = mask >> 1;
-    
-    return mask & dist;
+    return EXIT_SUCCESS;
 }
 
 // This function must take a register and a number value
 // FORMAT; $(inst) $(register) $(number) $(label_1, label_2, ...)
 int hex_inst_numlabel_reg ( int32_t *inst, tree inst_tree, int resolution, 
                             int sign, int32_t pc, dictionary symtab, 
-                            int forwards, int inverse, int *regx) {
+                            int forwards, int inverse, int *regx, int yes_label) {
 
     int found_numlabel = 0;
     int found_reg = 0;
@@ -427,7 +442,8 @@ int hex_inst_numlabel_reg ( int32_t *inst, tree inst_tree, int resolution,
             found_numlabel = 1;
             *inst = *inst + conv_token_number(token, resolution, sign);
         }
-        else if (search_dict(symtab, token) > 0 && found_numlabel == 0) {
+        else if (search_dict(symtab, token) > 0 && found_numlabel == 0 
+                 && yes_label == 1) {
             found_numlabel = 1;
             *inst = *inst + label_dist(pc, search_dict(symtab, token), 
                                         resolution, forwards, inverse);
@@ -444,16 +460,19 @@ int hex_inst_numlabel_reg ( int32_t *inst, tree inst_tree, int resolution,
             }
         }
         else {
+            fprintf(stderr, "\nUnidentified Token Found %s\n", token);
             return EXIT_FAILURE;
         }
     }
-    if (found_numlabel == 0 || found_reg == 0)
+    if (found_numlabel == 0 || found_reg == 0){
+        fprintf(stderr, "\nNumber/Label argument or register is missing!\n");    
         return EXIT_FAILURE;
+    }
     return EXIT_SUCCESS;
 }
 
 
-// This instruction must take a 3 registers and a number value
+// This instruction must take a 3 registers
 // FORMAT; $(inst) $(register, register, register) $(label_1, label_2, ...)
 int hex_inst_reg_reg_reg ( int32_t *inst, tree inst_tree, int *regx) {
 
@@ -483,11 +502,84 @@ int hex_inst_reg_reg_reg ( int32_t *inst, tree inst_tree, int *regx) {
             found_reg++;
         }
         else {
+            fprintf(stderr, "\nUnidentified Token Found %s\n", token);
             return EXIT_FAILURE;
         }
     }
     *regx = reg_temp;
-    if (found_reg < 3)
+    if (found_reg < 3){
+        fprintf(stderr, "\nRegister arguments are missing!\n");    
         return EXIT_FAILURE;
+    }
     return EXIT_SUCCESS;
+}
+
+// This instruction must take a 2 registers and a number value
+// FORMAT; $(inst) $(register, register) $(number) $(label_1, label_2, ...)
+int hex_inst_reg_reg_num ( int32_t *inst, tree inst_tree, int *regx) {
+
+    int found_reg = 0;
+    int found_num = 0;
+    int reg_temp = *regx;
+    char *token;
+
+    for (int32_t i = 0; i < inst_tree->size; i++) {
+
+        token = inst_tree->children[i]->token;
+
+        // If the token is a label, we ignore it. We simply wish to find
+        // the furst number or arglabel.
+
+        if (is_token_label(token))
+            continue;
+        else if (get_reg_argcode(token) != -1 && found_reg < 2) {
+
+            if (get_reg_argcode(token) != 16) {
+                *inst = *inst + 
+                        (((int32_t)get_reg_argcode(token)) << (24 - (4*found_reg)));
+                if (found_reg == 0)
+                    reg_temp = get_reg_argcode(token);
+            }
+            else {
+                *inst = *inst + (((int32_t) *regx) << (24 - (4*found_reg)));
+            }            
+            found_reg++;
+        }
+        else if (is_token_number(token) && found_num == 0) {
+            found_num = 1;
+            *inst = *inst + conv_token_number(token, 24, UNSIGNED);
+        }
+        else {
+            fprintf(stderr, "\nUnidentified Token Found %s\n", token);
+            return EXIT_FAILURE;
+        }
+    }
+    *regx = reg_temp;
+    if (found_reg < 2 || found_num == 0){
+        fprintf(stderr, "\nNumber/Label argument or registers are missing!\n");    
+        return EXIT_FAILURE;
+    }
+    return EXIT_SUCCESS;
+}
+
+// Calculate relative label distance.
+// Add some better error checking here!!!
+int32_t label_dist(int32_t pc, int32_t label, int resolution, 
+                    int forwards, int inverse) {
+    int32_t dist = label - pc;
+    if (inverse > 0)
+        dist *= -1;
+    if (forwards > 0 && dist < 0) {
+        fprintf(stderr, "Waring: (@%d) %s %s", pc,
+                        "Instruction is bounded by reference direction",
+                        "yet actual reference is in a different direction!\n");
+    }
+
+    int32_t mask = 0x0;
+
+    for (int i = 0; i < resolution; i++)
+        mask = (mask+1) << 1;
+    mask = mask >> 1;
+    
+    return mask & dist;
 }

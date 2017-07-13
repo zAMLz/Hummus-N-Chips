@@ -237,17 +237,18 @@ int preprocess_hal(FILE *hal_file, FILE *hex_file, FILE *log_file) {
 }
 
 
-void print_in_bin(int32_t inst, FILE *out_file, const char* token) {
+void print_in_bin(int32_t inst, FILE *out_file) {
     int32_t mask = 0;
-    debug_print("@bw", out_file,"[%s] %08x", token, inst);
+    debug_print("@bw", out_file,"%08x", inst);
     debug_print("@bw", out_file, " [");
     for (int i = 0; i < 32; i++) {
         mask = 0x80000000 >> i;
         mask = mask & inst;
         mask = mask >> (31 - i);
+        if (mask == -1) mask = 1;
         debug_print("@bw", out_file, "%d", mask);
     }
-    debug_print("@bw", out_file, "]\n");
+    debug_print("@bw", out_file, "]");
 }
 
 int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) {
@@ -282,6 +283,8 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
     debug_print("@bw", out_file, "------------------------------------------\n\n");
 
     for(int32_t i = 0; i < abstree->size; i++) { // pc ---> program counter
+        
+        debug_print("@bw", out_file,"[%s] ", abstree->children[i]->token);
         switch(get_inst_opcode(abstree->children[i]->token)) {
             
             case BIT_MISC:
@@ -290,7 +293,7 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                                         abstree->children[i],
                                         28, // Resolution 
                                         UNSIGNED);
-                print_in_bin(*instruction, out_file, abstree->children[i]->token);
+                print_in_bin(*instruction, out_file);
                 /* FILE IO HERE */
                 break;
             
@@ -304,7 +307,7 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                                             symtab, 
                                             FORCE_DIRECTION,
                                             NO_INVERSE);
-                print_in_bin(*instruction, out_file, abstree->children[i]->token);
+                print_in_bin(*instruction, out_file);
                 /* FILE IO HERE */
                 break;
             
@@ -318,7 +321,7 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                                             symtab, 
                                             FORCE_DIRECTION, 
                                             INVERSE);
-                print_in_bin(*instruction, out_file, abstree->children[i]->token);
+                print_in_bin(*instruction, out_file);
                 /* FILE IO HERE */
                 break;
             
@@ -332,7 +335,7 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                                             symtab, 
                                             ANY_DIRECTION, 
                                             NO_INVERSE);
-                print_in_bin(*instruction, out_file, abstree->children[i]->token);
+                print_in_bin(*instruction, out_file);
                 /* FILE IO HERE */
                 break;
             
@@ -346,8 +349,9 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                                                  symtab, 
                                                  ANY_DIRECTION, 
                                                  NO_INVERSE, 
-                                                 &regx /* Previous Register */);
-                print_in_bin(*instruction, out_file, abstree->children[i]->token);
+                                                 &regx, // Previous Register
+                                                 ALLOW_LABEL);
+                print_in_bin(*instruction, out_file);
                 /* FILE IO HERE */
                 break;
             
@@ -361,8 +365,9 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                                                  symtab, 
                                                  ANY_DIRECTION, 
                                                  NO_INVERSE, 
-                                                 &regx /* Previous Register */);
-                print_in_bin(*instruction, out_file, abstree->children[i]->token);
+                                                 &regx, // Previous Register
+                                                 ALLOW_LABEL);
+                print_in_bin(*instruction, out_file);
                 /* FILE IO HERE */
                 break;
             
@@ -376,8 +381,9 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                                                  symtab, 
                                                  ANY_DIRECTION, 
                                                  NO_INVERSE, 
-                                                 &regx /* Previous Register */);
-                print_in_bin(*instruction, out_file, abstree->children[i]->token);
+                                                 &regx, // Previous Register
+                                                 ALLOW_LABEL);
+                print_in_bin(*instruction, out_file);
                 /* FILE IO HERE */
                 break;
             
@@ -386,42 +392,120 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                 rstatus = hex_inst_reg_reg_reg (instruction,
                                                 abstree->children[i],
                                                 &regx /* Previous Register */);
-                print_in_bin(*instruction, out_file, abstree->children[i]->token);
+                print_in_bin(*instruction, out_file);
                 /* FILE IO HERE */
                 break;
             
             case BIT_CNST:
+                *instruction = 0x80000000;
+                rstatus = hex_inst_numlabel_reg (instruction, 
+                                                 abstree->children[i], 
+                                                 24, // Resolution 
+                                                 SIGNED, 
+                                                 i+1, // Program Counter 
+                                                 symtab, 
+                                                 ANY_DIRECTION, 
+                                                 NO_INVERSE, 
+                                                 &regx, // Previous Register
+                                                 NO_LABEL);
+                print_in_bin(*instruction, out_file);
+                /* FILE IO HERE */
                 break;
             
             case BIT_BLSM:
+                *instruction = 0x90000000;
+                rstatus = hex_inst_bool( instruction, 
+                                        abstree->children[i]);
+                print_in_bin(*instruction, out_file);
+                /* FILE IO HERE */
                 break;
             
             case BIT_BOOL:
+                *instruction = 0xA0000000;
+                rstatus = hex_inst_reg_reg_reg (instruction,
+                                                abstree->children[i],
+                                                &regx /* Previous Register */);
+                print_in_bin(*instruction, out_file);
+                /* FILE IO HERE */
                 break;
             
             case BIT_ADDR:
+                *instruction = 0xB0000000;
+                rstatus = hex_inst_reg_reg_reg (instruction,
+                                                abstree->children[i],
+                                                &regx /* Previous Register */);
+                print_in_bin(*instruction, out_file);
+                /* FILE IO HERE */
                 break;
             
             case BIT_ADDC:
+                *instruction = 0xC0000000;
+                rstatus = hex_inst_reg_reg_reg (instruction,
+                                                abstree->children[i],
+                                                &regx /* Previous Register */);
+                print_in_bin(*instruction, out_file);
+                /* FILE IO HERE */
                 break;
             
             case BIT_SUBC:
+                *instruction = 0xD0000000;
+                rstatus = hex_inst_reg_reg_num (instruction,
+                                                abstree->children[i],
+                                                &regx /* Previous Register */);
+                print_in_bin(*instruction, out_file);
+                /* FILE IO HERE */
                 break;
             
             case BIT_STMY:
+                *instruction = 0xE0000000;
+                rstatus = hex_inst_numlabel_reg (instruction, 
+                                                 abstree->children[i], 
+                                                 24, // Resolution 
+                                                 SIGNED, 
+                                                 i+1, // Program Counter 
+                                                 symtab, 
+                                                 ANY_DIRECTION, 
+                                                 NO_INVERSE, 
+                                                 &regx, // Previous Register
+                                                 ALLOW_LABEL);
+                print_in_bin(*instruction, out_file);
+                /* FILE IO HERE */
                 break;
             
             case BIT_STRG:
+                *instruction = 0xF0000000;
+                rstatus = hex_inst_reg_reg_reg (instruction,
+                                                abstree->children[i],
+                                                &regx /* Previous Register */);
+                print_in_bin(*instruction, out_file);
+                /* FILE IO HERE */
                 break;
             
             case BIT_VARI:
+                *instruction = 0x00000000;
+                rstatus = hex_inst_num( instruction, 
+                                        abstree->children[i],
+                                        32, // Resolution 
+                                        SIGNED);
+                print_in_bin(*instruction, out_file);
+                /* FILE IO HERE */
                 break;
+
             
             default:
+                fprintf(stderr, "[Well this is ackward]");
                 break;
         }
-        if (rstatus == EXIT_FAILURE)
-            break;   
+        debug_print("@bw", out_file, "\n");
+        if (rstatus == EXIT_FAILURE) {
+            fprintf(stderr, "Unexpected Error. Aborting...\n");
+            fprintf(stderr, "Location:\n%s\n", abstree->children[i]->token);
+            for (int32_t j = 0; j < abstree->children[i]->size; j++){
+                fprintf(stderr, " |   " );
+                fprintf(stderr, "%s\n", abstree->children[i]->children[j]->token);
+            }
+            break;
+        }
     }
 
     // Free the made binary buffer.
