@@ -294,7 +294,7 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                                         28, // Resolution 
                                         UNSIGNED);
                 print_in_bin(*instruction, out_file);
-                /* FILE IO HERE */
+                fwrite(instruction, sizeof(int32_t), 1, hex_file);
                 break;
             
             case BIT_SHFF:
@@ -308,7 +308,7 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                                             FORCE_DIRECTION,
                                             NO_INVERSE);
                 print_in_bin(*instruction, out_file);
-                /* FILE IO HERE */
+                fwrite(instruction, sizeof(int32_t), 1, hex_file);
                 break;
             
             case BIT_SHFB:
@@ -322,7 +322,7 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                                             FORCE_DIRECTION, 
                                             INVERSE);
                 print_in_bin(*instruction, out_file);
-                /* FILE IO HERE */
+                fwrite(instruction, sizeof(int32_t), 1, hex_file);
                 break;
             
             case BIT_BROZ:
@@ -336,7 +336,7 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                                             ANY_DIRECTION, 
                                             NO_INVERSE);
                 print_in_bin(*instruction, out_file);
-                /* FILE IO HERE */
+                fwrite(instruction, sizeof(int32_t), 1, hex_file);
                 break;
             
             case BIT_SVPC:
@@ -352,7 +352,7 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                                                  &regx, // Previous Register
                                                  ALLOW_LABEL);
                 print_in_bin(*instruction, out_file);
-                /* FILE IO HERE */
+                fwrite(instruction, sizeof(int32_t), 1, hex_file);
                 break;
             
             case BIT_UDPC:
@@ -368,7 +368,7 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                                                  &regx, // Previous Register
                                                  ALLOW_LABEL);
                 print_in_bin(*instruction, out_file);
-                /* FILE IO HERE */
+                fwrite(instruction, sizeof(int32_t), 1, hex_file);
                 break;
             
             case BIT_LDMY:
@@ -384,7 +384,7 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                                                  &regx, // Previous Register
                                                  ALLOW_LABEL);
                 print_in_bin(*instruction, out_file);
-                /* FILE IO HERE */
+                fwrite(instruction, sizeof(int32_t), 1, hex_file);
                 break;
             
             case BIT_LDRG:
@@ -393,7 +393,7 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                                                 abstree->children[i],
                                                 &regx /* Previous Register */);
                 print_in_bin(*instruction, out_file);
-                /* FILE IO HERE */
+                fwrite(instruction, sizeof(int32_t), 1, hex_file);
                 break;
             
             case BIT_CNST:
@@ -409,7 +409,7 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                                                  &regx, // Previous Register
                                                  NO_LABEL);
                 print_in_bin(*instruction, out_file);
-                /* FILE IO HERE */
+                fwrite(instruction, sizeof(int32_t), 1, hex_file);
                 break;
             
             case BIT_BLSM:
@@ -417,7 +417,7 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                 rstatus = hex_inst_bool( instruction, 
                                         abstree->children[i]);
                 print_in_bin(*instruction, out_file);
-                /* FILE IO HERE */
+                fwrite(instruction, sizeof(int32_t), 1, hex_file);
                 break;
             
             case BIT_BOOL:
@@ -426,7 +426,7 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                                                 abstree->children[i],
                                                 &regx /* Previous Register */);
                 print_in_bin(*instruction, out_file);
-                /* FILE IO HERE */
+                fwrite(instruction, sizeof(int32_t), 1, hex_file);
                 break;
             
             case BIT_ADDR:
@@ -435,7 +435,7 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                                                 abstree->children[i],
                                                 &regx /* Previous Register */);
                 print_in_bin(*instruction, out_file);
-                /* FILE IO HERE */
+                fwrite(instruction, sizeof(int32_t), 1, hex_file);
                 break;
             
             case BIT_ADDC:
@@ -444,7 +444,7 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                                                 abstree->children[i],
                                                 &regx /* Previous Register */);
                 print_in_bin(*instruction, out_file);
-                /* FILE IO HERE */
+                fwrite(instruction, sizeof(int32_t), 1, hex_file);
                 break;
             
             case BIT_SUBC:
@@ -453,7 +453,7 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                                                 abstree->children[i],
                                                 &regx /* Previous Register */);
                 print_in_bin(*instruction, out_file);
-                /* FILE IO HERE */
+                fwrite(instruction, sizeof(int32_t), 1, hex_file);
                 break;
             
             case BIT_STMY:
@@ -469,7 +469,7 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                                                  &regx, // Previous Register
                                                  ALLOW_LABEL);
                 print_in_bin(*instruction, out_file);
-                /* FILE IO HERE */
+                fwrite(instruction, sizeof(int32_t), 1, hex_file);
                 break;
             
             case BIT_STRG:
@@ -478,7 +478,7 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                                                 abstree->children[i],
                                                 &regx /* Previous Register */);
                 print_in_bin(*instruction, out_file);
-                /* FILE IO HERE */
+                fwrite(instruction, sizeof(int32_t), 1, hex_file);
                 break;
             
             case BIT_VARI:
@@ -488,7 +488,7 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                                         32, // Resolution 
                                         SIGNED);
                 print_in_bin(*instruction, out_file);
-                /* FILE IO HERE */
+                fwrite(instruction, sizeof(int32_t), 1, hex_file);
                 break;
 
             
