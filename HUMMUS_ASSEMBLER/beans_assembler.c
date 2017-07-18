@@ -64,7 +64,7 @@ int assemble_hummus(char *file_name_path) {
     
     // Ensure its okay
     if(file_data_in == NULL) {
-        fprintf(stderr, "Unable to open file; %s\n", file_name_in);
+        fprintf(stderr, "Unable to open file: %s\n", file_name_in);
         debug_print("@b", stderr, "File Open in assemble_hummus() has failed.\n");
         return EXIT_FAILURE;
     }
@@ -72,8 +72,7 @@ int assemble_hummus(char *file_name_path) {
     debug_print("@b", stdout, "Input file was successfully opened!\n");
     
     // Do preprocessing phase here.
-    if (preprocess_hal(file_data_in, file_data_out, file_data_log) == EXIT_FAILURE) 
-        return EXIT_FAILURE;
+    int rstatus = preprocess_hal(file_data_in, file_data_out, file_data_log); 
 
     int flclose_rc_01 = fclose(file_data_in);
     int flclose_rc_02 = fclose(file_data_out);
@@ -93,7 +92,7 @@ int assemble_hummus(char *file_name_path) {
     }
 
     //get_machine_code(file_name_path);
-    return EXIT_SUCCESS;
+    return rstatus;
 }
 
 typedef enum PREPROCESS_STATE {
