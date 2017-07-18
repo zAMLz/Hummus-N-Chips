@@ -32,13 +32,13 @@ void print_dict(dictionary dict, FILE *out_file);
 // Here are various functions exist to convert the 
 // Assembly tokens into their respective hexademical
 // values.
-int hex_inst_num (int32_t *inst, tree inst_tree, int resolution, int sign);
+int hex_inst_num (int32_t *inst, tree inst_tree, int resolution);
 int hex_inst_bool (int32_t *inst, tree inst_tree);
-int hex_inst_numlabel ( int32_t *inst, tree inst_tree, int resolution, int sign,
+int hex_inst_numlabel ( int32_t *inst, tree inst_tree, int resolution,
                         int32_t pc, dictionary symtab, int forwards, int inverse);
 int hex_inst_numlabel_reg ( int32_t *inst, tree inst_tree, int resolution, 
-                            int sign, int32_t pc, dictionary symtab, 
-                            int forwards, int inverse, int *regx, int yes_label);
+                            int32_t pc, dictionary symtab, int forwards, 
+                            int inverse, int *regx, int yes_label);
 int hex_inst_reg_reg_reg ( int32_t *inst, tree inst_tree, int *regx);
 int hex_inst_reg_reg_num ( int32_t *inst, tree inst_tree, int *regx);
 

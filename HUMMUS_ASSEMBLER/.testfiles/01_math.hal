@@ -4,9 +4,9 @@
 # That does mathematical computations
 
 SHFF    MAIN_PROGRAM        :LABEL_DECLARATIONS
-VARI    0x05    :X
-VARI    0x3     :Y
-VARI    0x05    :Z
+VARI    0x05            :X
+VARI    -0xFF_FFFF       :Y
+VARI    0x34A_F4A_1            :Z
 
 LDMY    $R1     X           :MAIN_PROGRAM
 LDMY    $R2     Y

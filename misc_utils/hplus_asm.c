@@ -138,9 +138,147 @@ int is_token_number(const char *token) {
 
 // Actually convert a token to its binary representation
 // following the specifications from the parameter
-int32_t conv_token_number(const char *token, int resolution, int sign){
-    token=token;
-    resolution=resolution;
-    sign=sign;
-    return (int32_t) 31;
+#define POSITIVE 1
+#define NEGATIVE -1
+
+int32_t conv_token_number(const char *token, int resolution){
+
+    debug_print("n", stdout, "Converting token to number\n");
+    debug_print("n", stdout, "TOKEN -> %s\n", token);
+    debug_print("n", stdout, "RESOLUTION = (%d)\n", resolution);
+
+    int base = 10;
+    int cur_sign = POSITIVE;
+
+    // We must ensure it is a valud number
+    if (!is_token_number(token))
+        return (int32_t) 0;
+
+    // Check negations
+    if (strncmp(token, "-", 1) == 0){
+        token += 1;
+        cur_sign = NEGATIVE;
+    }
+    else if (strncmp(token, "+", 1) == 0){
+        token += 1;
+        cur_sign = POSITIVE;
+    }
+
+    // Check description set
+    if (strncmp(token, "0b", 2) == 0) {
+        token += 2;
+        base = 2;
+    }
+    else if (strncmp(token, "0o", 2) == 0) {
+        token += 2;
+        base = 8;
+    }
+    else if (strncmp(token, "0d", 2) == 0) {
+        token += 2;
+        base = 10;
+    }
+    else if (strncmp(token, "0x", 2) == 0) {
+        token += 2;
+        base = 16;
+    }
+
+    debug_print("n", stdout, "\nBase Number Found: %d\n", base);
+    debug_print("n", stdout, "Expected Sign = (%d)\n", cur_sign);
+
+    int32_t result = 0;
+    int32_t base_pow = 1; // base ^ 0 = 1
+    int32_t tokval = 0;
+
+    for (int i = 0; i < (int)strlen(token); i++) {
+
+        // switch case to figure out the value of our token.
+        switch(token[strlen(token)-1-i]) {
+            case '0':
+                tokval = 0;
+                break;
+            case '1':
+                tokval = 1;
+                break;
+            case '2':
+                tokval = 2;
+                break;
+            case '3':
+                tokval = 3;
+                break;
+            case '4':
+                tokval = 4;
+                break;
+            case '5':
+                tokval = 5;
+                break;
+            case '6':
+                tokval = 6;
+                break;
+            case '7':
+                tokval = 7;
+                break;
+            case '8':
+                tokval = 8;
+                break;
+            case '9':
+                tokval = 9;
+                break;
+            case 'a':
+            case 'A':
+                tokval = 10;
+                break;
+            case 'b':
+            case 'B':
+                tokval = 11;
+                break;
+            case 'c':
+            case 'C':
+                tokval = 12;
+                break;
+            case 'd':
+            case 'D':
+                tokval = 13;
+                break;
+            case 'e':
+            case 'E':
+                tokval = 14;
+                break;
+            case 'f':
+            case 'F':
+                tokval = 15;
+                break;
+            case '_':
+            default:
+                continue;
+                break;
+        }
+
+        // Once we have the value, we proceed to compute the
+        // partial result.
+        result += (base_pow * tokval);
+        // Update the base_pow
+        base_pow *= base;
+    }
+
+    // Once we have the result, we must convert the number to match
+    // the specification obtained by the user.
+    
+    result *= cur_sign;
+    
+    debug_print("n", stdout, "\nFull Number = %d\n", result);
+
+    base_pow = 1;
+    base = 2;
+    int32_t mask = 0;
+    for (int i = 0; i < resolution; i++) {
+        mask += (base_pow * 1);
+        base_pow *= base;
+        //debug_print("n", stdout, "Current Mask = %x\n", mask);
+    }
+
+    debug_print("n", stdout, "Mask Generated = %x\n", mask);
+    debug_print("n", stdout, "Final Result: %d\n", result & mask);
+    debug_print("n", stdout, "Final Result: %x\n\n\n", result & mask);
+
+    return result & mask;
 }

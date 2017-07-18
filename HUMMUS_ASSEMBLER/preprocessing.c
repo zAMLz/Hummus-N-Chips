@@ -320,7 +320,7 @@ void print_dict(dictionary dict, FILE *out_file) {
 
 // This function must simply takes only a single number.
 // FORMAT; $(inst) $(number) $(label_1, label_2, ...)
-int hex_inst_num (int32_t *inst, tree inst_tree, int resolution, int sign) {
+int hex_inst_num (int32_t *inst, tree inst_tree, int resolution) {
 
     int found_num = 0;
     char *token;
@@ -336,7 +336,7 @@ int hex_inst_num (int32_t *inst, tree inst_tree, int resolution, int sign) {
             continue;
         else if (is_token_number(token) && found_num == 0) {
             found_num = 1;
-            *inst = *inst + conv_token_number(token, resolution, sign);
+            *inst = *inst + conv_token_number(token, resolution);
         }
         else {
             fprintf(stderr, "\nUnidentified Token Found %s\n", token);
@@ -385,7 +385,7 @@ int hex_inst_bool (int32_t *inst, tree inst_tree) {
 // This function has two options. Single argument number or label.
 // FORMAT; $(inst) $(number) $(label_1, label_2, ...)
 // FORMAT; $(inst) $(label_arg) $(label_1, label_2, ...)
-int hex_inst_numlabel ( int32_t *inst, tree inst_tree, int resolution, int sign,
+int hex_inst_numlabel ( int32_t *inst, tree inst_tree, int resolution,
                         int32_t pc, dictionary symtab, int forwards, int inverse) {
 
     int found_numlabel = 0;
@@ -401,7 +401,7 @@ int hex_inst_numlabel ( int32_t *inst, tree inst_tree, int resolution, int sign,
             continue;
         else if (is_token_number(token) && found_numlabel == 0) {
             found_numlabel = 1;
-            *inst = *inst + conv_token_number(token, resolution, sign);
+            *inst = *inst + conv_token_number(token, resolution);
         }
         else if (search_dict(symtab, token) > 0 && found_numlabel == 0) {
             found_numlabel = 1;
@@ -423,8 +423,8 @@ int hex_inst_numlabel ( int32_t *inst, tree inst_tree, int resolution, int sign,
 // This function must take a register and a number value
 // FORMAT; $(inst) $(register) $(number) $(label_1, label_2, ...)
 int hex_inst_numlabel_reg ( int32_t *inst, tree inst_tree, int resolution, 
-                            int sign, int32_t pc, dictionary symtab, 
-                            int forwards, int inverse, int *regx, int yes_label) {
+                            int32_t pc, dictionary symtab, int forwards, 
+                            int inverse, int *regx, int yes_label) {
 
     int found_numlabel = 0;
     int found_reg = 0;
@@ -440,7 +440,7 @@ int hex_inst_numlabel_reg ( int32_t *inst, tree inst_tree, int resolution,
             continue;
         else if (is_token_number(token) && found_numlabel == 0) {
             found_numlabel = 1;
-            *inst = *inst + conv_token_number(token, resolution, sign);
+            *inst = *inst + conv_token_number(token, resolution);
         }
         else if (search_dict(symtab, token) > 0 && found_numlabel == 0 
                  && yes_label == 1) {
@@ -547,7 +547,7 @@ int hex_inst_reg_reg_num ( int32_t *inst, tree inst_tree, int *regx) {
         }
         else if (is_token_number(token) && found_num == 0) {
             found_num = 1;
-            *inst = *inst + conv_token_number(token, 24, UNSIGNED);
+            *inst = *inst + conv_token_number(token, 24);
         }
         else {
             fprintf(stderr, "\nUnidentified Token Found %s\n", token);

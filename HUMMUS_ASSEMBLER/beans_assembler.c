@@ -291,8 +291,7 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                 *instruction = 0x00000000;
                 rstatus = hex_inst_num( instruction, 
                                         abstree->children[i],
-                                        28, // Resolution 
-                                        UNSIGNED);
+                                        28 /* Resolution */);
                 print_in_bin(*instruction, out_file);
                 fwrite(instruction, sizeof(int32_t), 1, hex_file);
                 break;
@@ -302,7 +301,6 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                 rstatus = hex_inst_numlabel(instruction,
                                             abstree->children[i],
                                             28, // Resolution 
-                                            UNSIGNED, 
                                             i+1, // Program Counter
                                             symtab, 
                                             FORCE_DIRECTION,
@@ -316,7 +314,6 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                 rstatus = hex_inst_numlabel(instruction,
                                             abstree->children[i],
                                             28, // Resolution 
-                                            UNSIGNED, 
                                             i+1, // Program Counter
                                             symtab, 
                                             FORCE_DIRECTION, 
@@ -330,7 +327,6 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                 rstatus = hex_inst_numlabel(instruction,
                                             abstree->children[i],
                                             28, // Resolution
-                                            SIGNED, 
                                             i+1, // Program Counter 
                                             symtab, 
                                             ANY_DIRECTION, 
@@ -344,7 +340,6 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                 rstatus = hex_inst_numlabel_reg (instruction, 
                                                  abstree->children[i], 
                                                  24, // Resolution 
-                                                 SIGNED, 
                                                  i+1, // Program Counter 
                                                  symtab, 
                                                  ANY_DIRECTION, 
@@ -360,7 +355,6 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                 rstatus = hex_inst_numlabel_reg (instruction, 
                                                  abstree->children[i], 
                                                  24, // Resolution 
-                                                 SIGNED, 
                                                  i+1, // Program Counter 
                                                  symtab, 
                                                  ANY_DIRECTION, 
@@ -376,7 +370,6 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                 rstatus = hex_inst_numlabel_reg (instruction, 
                                                  abstree->children[i], 
                                                  24, // Resolution 
-                                                 SIGNED, 
                                                  i+1, // Program Counter 
                                                  symtab, 
                                                  ANY_DIRECTION, 
@@ -401,7 +394,6 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                 rstatus = hex_inst_numlabel_reg (instruction, 
                                                  abstree->children[i], 
                                                  24, // Resolution 
-                                                 SIGNED, 
                                                  i+1, // Program Counter 
                                                  symtab, 
                                                  ANY_DIRECTION, 
@@ -461,7 +453,6 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                 rstatus = hex_inst_numlabel_reg (instruction, 
                                                  abstree->children[i], 
                                                  24, // Resolution 
-                                                 SIGNED, 
                                                  i+1, // Program Counter 
                                                  symtab, 
                                                  ANY_DIRECTION, 
@@ -485,8 +476,7 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                 *instruction = 0x00000000;
                 rstatus = hex_inst_num( instruction, 
                                         abstree->children[i],
-                                        32, // Resolution 
-                                        SIGNED);
+                                        32 /* Resolution */);
                 print_in_bin(*instruction, out_file);
                 fwrite(instruction, sizeof(int32_t), 1, hex_file);
                 break;
