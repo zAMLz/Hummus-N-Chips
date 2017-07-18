@@ -20,11 +20,38 @@
 
 ########################################################
 
+CC       = gcc -g -O2 -Wall -Wextra -Wpedantic
+
+README   = README
+MKFILE   = Makefile
+DEPFILE  = Makefile.dep
+
+MAINFILE = main.c
+
+define SUPPFILE
+debug_util.c hplus_asm.c simmus.c
+endef
+
+SOURCES  = ${MAINFILE} ${SUPPFILE}
+
+HEADERS  = ${SUPPFILE:.c=.h}
+OBJECTS  = ${SOURCES:.c=.o}
+EXECBIN  = simmus
+
 ########################################################
 
 # Build the HummusPlus Simulator
-simmus: 
+${EXECBIN}: ${HEADERS} ${OBJECTS}
+	${CC} -o ${EXECBIN} ${OBJECTS} 
+
+%.o : %.c
+	${CC} -c $<
 
 clean:
+	- rm ${OBJECTS}
+	- rm vgcore.*
+	- rm ./*.dump
+	- rm ./*.log
 
-spotless:                     
+spotless: clean
+	- rm ${EXECBIN}          
