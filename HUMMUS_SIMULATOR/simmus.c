@@ -8,6 +8,9 @@
 
 #include "simmus.h"
 #include "debug_util.h"
+#include "system_memory.h"
+
+system_memory build_system(FILE *input);
 
 int simulate_hummus(char *file_name_path) {
 
@@ -61,11 +64,20 @@ int simulate_hummus(char *file_name_path) {
 
     debug_print("@b", stdout, "Input file was successfully opened!\n");
 
-    // Do the simulation stuff here
+    // Setup the system memory here
+    system_memory sysmem = build_system(file_data_in);
     int rstatus = EXIT_SUCCESS;
+    if (sysmem == NULL)
+        rstatus = EXIT_FAILURE;
 
-    // Close our files
+    // Close our input file since we don't wish to hold memory
     int flclose_rc_01 = fclose(file_data_in);
+
+    // Run the simulator if everything behaved cleanly up to this point
+    if (rstatus == 0 && flclose_rc_01 == 0)
+        rstatus = rstatus | 0;
+
+    // Close the rest of our files
     int flclose_rc_02 = 0;
     if(check_debug_flags("W"))
         flclose_rc_02 = fclose(file_data_log);
@@ -85,5 +97,30 @@ int simulate_hummus(char *file_name_path) {
     }
 
     return rstatus;
+}
 
+
+system_memory build_system(FILE *input_file) {
+    uint32_t *buffer;
+    uint32_t size;
+    size_t result;
+    
+    // Get the size
+    fseek (input_file , 0 , SEEK_END);
+    size = (ftell(input_file))/sizeof(uint32_t);    // Because ftell() gives us bytes,
+    rewind (input_file);
+    
+    buffer = (uint32_t*) malloc(sizeof(uint32_t)*size);
+    if (buffer == NULL)
+        return NULL;
+    result = fread(buffer, sizeof(uint32_t), size, input_file);
+    if (result != size) {
+        fprintf(stderr, "Unable to read input file!\n");
+        free(buffer);
+        return NULL;
+    }
+
+    system_memory SM = create_system_memory(buffer, size);
+    free(buffer);
+    return SM;
 }

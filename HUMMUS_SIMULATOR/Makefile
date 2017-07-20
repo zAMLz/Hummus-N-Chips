@@ -30,6 +30,7 @@ MAINFILE = main.c
 
 define SUPPFILE
 debug_util.c hplus_asm.c simmus.c
+system_memory.c
 endef
 
 SOURCES  = ${MAINFILE} ${SUPPFILE}

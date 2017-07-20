@@ -18,6 +18,9 @@ beans (HummusPlus Assembler)
 
 */
 
+#define     TRUE    1
+#define     FALSE   0
+
 
 // Sets the debug codes for the internal debugger
 void set_debug_flags(char *dcode);
