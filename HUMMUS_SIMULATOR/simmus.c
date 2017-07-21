@@ -11,6 +11,7 @@
 #include "system_memory.h"
 
 system_memory build_system(FILE *input);
+int run_simmus(system_memory SM, FILE *log_file, FILE *dump_file);
 
 int simulate_hummus(char *file_name_path) {
 
@@ -27,7 +28,7 @@ int simulate_hummus(char *file_name_path) {
     strcpy(file_name_in, basename(file_name_path));
 
     // Default log file name conversion
-    strcpy(file_name_log, "(STDOUT");
+    strcpy(file_name_log, "(STDOUT)");
     strcpy(file_name_dump, "(STDOUT)");
 
     // open the contents of the file
@@ -74,8 +75,12 @@ int simulate_hummus(char *file_name_path) {
     int flclose_rc_01 = fclose(file_data_in);
 
     // Run the simulator if everything behaved cleanly up to this point
-    if (rstatus == 0 && flclose_rc_01 == 0)
-        rstatus = rstatus | 0;
+    if (rstatus == 0 && flclose_rc_01 == 0){
+        rstatus = rstatus | run_simmus(sysmem, file_data_log, file_data_dump);
+    }
+
+    // Free data
+    purge_system_memory(sysmem);
 
     // Close the rest of our files
     int flclose_rc_02 = 0;
@@ -123,4 +128,13 @@ system_memory build_system(FILE *input_file) {
     system_memory SM = create_system_memory(buffer, size);
     free(buffer);
     return SM;
+}
+
+
+int run_simmus(system_memory SM, FILE *log_file, FILE *dump_file) {
+    printf("COUNT %d\n", SM->count);
+    SM=SM;
+    log_file=log_file;
+    dump_file=dump_file;
+    return EXIT_SUCCESS;
 }

@@ -25,7 +25,7 @@ system_memory create_system_memory(uint32_t *program, uint32_t size) {
     SM->blobs = NULL;
 
     // Create the initial blob
-    blob init = create_blob(0x0, size * sizeof(uint32_t), "PROGRAM_START");
+    blob init = create_blob(0x0, size/2 * sizeof(uint32_t), "PROGRAM_START");
     if (init == NULL) {
         free(SM);
         return NULL;
@@ -90,6 +90,7 @@ int system_memory_io(int iotype, system_memory SM, uint32_t addr, uint32_t *data
     int idx = 0;
     int curidx = 0;
     int blob_is_found = FALSE;
+    int check_for_merge = FALSE;
 
     // Writing variables
     uint32_t raddr;
@@ -130,12 +131,16 @@ int system_memory_io(int iotype, system_memory SM, uint32_t addr, uint32_t *data
 
         // If no valid blob was found, we'll need to create it ourselves.
         if (blob_is_found == FALSE) {
+
+            check_for_merge = TRUE;
+            check_for_merge = check_for_merge;
             blob *newblobs = malloc(sizeof(blob) * (SM->count+1));
+            
             for (unsigned int k = 0; k < SM->count; k++) {
 
                 if (blob_is_found == FALSE) {
                     if (raddr < SM->blobs[k]->addr_start) {
-                        newblobs[k] = create_blob(raddr, 1, "");
+                        newblobs[k] = create_blob(raddr, 1, NULL);
                         curidx = k;
                         k--;
                         blob_is_found = TRUE;
@@ -150,7 +155,7 @@ int system_memory_io(int iotype, system_memory SM, uint32_t addr, uint32_t *data
             }
 
             if (blob_is_found == FALSE) {
-                newblobs[SM->count] = create_blob(raddr, 1, "");
+                newblobs[SM->count] = create_blob(raddr, 1, NULL);
                 curidx = SM->count;
             }
             
@@ -163,6 +168,7 @@ int system_memory_io(int iotype, system_memory SM, uint32_t addr, uint32_t *data
         }
     }
 
+    free(rdata);
     return EXIT_SUCCESS;
 }
 
@@ -187,4 +193,16 @@ int blob_io(int iotype, blob B, uint32_t addr, uint8_t *data) {
         fprintf(stderr, "Blob is not addressable with this address: %x\n", addr);
         return EXIT_FAILURE;
     }
+}
+
+// Purge the system memory and free its contents
+void purge_system_memory(system_memory SM) {
+    for (uint32_t i = 0; i < SM->count; i++) {
+        if(SM->blobs[i]->token != NULL)
+            free(SM->blobs[i]->token);
+        free(SM->blobs[i]->data);
+        free(SM->blobs[i]);
+    }
+    free(SM->blobs);
+    free(SM);
 }

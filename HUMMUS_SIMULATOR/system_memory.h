@@ -33,4 +33,6 @@ typedef struct system_memory_struct *system_memory;
 system_memory create_system_memory(uint32_t *program, uint32_t size);
 // Write to the system memory
 int system_memory_io(int iotype, system_memory SM, uint32_t addr, uint32_t *data);
+// Purge the system memory
+void purge_system_memory(system_memory SM);
 #endif
