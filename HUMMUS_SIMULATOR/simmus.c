@@ -132,9 +132,40 @@ system_memory build_system(FILE *input_file) {
 
 
 int run_simmus(system_memory SM, FILE *log_file, FILE *dump_file) {
-    printf("COUNT %d\n", SM->count);
-    SM=SM;
-    log_file=log_file;
+    print_system_memory(SM, log_file);
+
+    // some tests
+    uint32_t * data = malloc(sizeof(uint32_t));
+    *data = 0x10011001;
+    system_memory_io(IO_WRITE_MEM, SM, 0xff0a00, data);
+    *data = (*data) * 2;
+    system_memory_io(IO_WRITE_MEM, SM, 0xff0a08, data);
+
+    // Read it now.
+    printf("------------------------------------------------\n");
+    system_memory_io(IO_READ_MEM, SM, 0xff0a00, data);
+    printf("Here is data 1: %x\n", *data);
+    system_memory_io(IO_READ_MEM, SM, 0xff0a08, data);
+    printf("Here is data 2: %x\n", *data);
+
+    print_system_memory(SM, log_file);
+    printf("------------------------------------------------\n");
+    printf("------------------------------------------------\n");
+
+    *data = (*data) * 2;
+    system_memory_io(IO_WRITE_MEM, SM, 0xff0a04, data);
+    print_system_memory(SM, log_file);
+
+    system_memory_io(IO_READ_MEM, SM, 0xff0a00, data);
+    printf("Here is data 1: %x\n", *data);
+    system_memory_io(IO_READ_MEM, SM, 0xff0a04, data);
+    printf("Here is data 2: %x\n", *data);
+    system_memory_io(IO_READ_MEM, SM, 0xff0a08, data);
+    printf("Here is data 3: %x\n", *data);
+    system_memory_io(IO_READ_MEM, SM, 0xff0a06, data);
+    printf("Here is data ?: %x\n", *data);
+
+
     dump_file=dump_file;
     return EXIT_SUCCESS;
 }

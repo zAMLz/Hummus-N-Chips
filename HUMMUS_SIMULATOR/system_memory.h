@@ -11,21 +11,23 @@
 // Each blob must have a starting address and an ending address.
 // They can also be named for special purposes. Named blobs cannot
 // be merged.
-
+struct blob_struct;
+typedef struct blob_struct *blob;
 struct blob_struct {
     char     * token;
     uint8_t  * data;
+    blob       prev;
+    blob       next;
     uint32_t   addr_start;
     uint32_t   addr_end;
 };
-typedef struct blob_struct *blob;
 
 // This represents a collection of blobs. This keeps track of all
 // blobs and provides methods to access them.
 
 struct system_memory_struct {
     uint32_t   count;
-    blob     * blobs;
+    blob       blobs;
 };
 typedef struct system_memory_struct *system_memory;
 
@@ -35,4 +37,6 @@ system_memory create_system_memory(uint32_t *program, uint32_t size);
 int system_memory_io(int iotype, system_memory SM, uint32_t addr, uint32_t *data);
 // Purge the system memory
 void purge_system_memory(system_memory SM);
+// Print details of the system memory (simply blob counts and addresses)
+void print_system_memory(system_memory SM, FILE *out_file);
 #endif
