@@ -566,7 +566,7 @@ int hex_inst_reg_reg_num ( int32_t *inst, tree inst_tree, int *regx) {
 // Add some better error checking here!!!
 int32_t label_dist(int32_t pc, int32_t label, int resolution, 
                     int forwards, int inverse) {
-    int32_t dist = label - pc;
+    int32_t dist = (label - pc)*4; // addreses must be in bytes!!!
     if (inverse > 0)
         dist *= -1;
     if (forwards > 0 && dist < 0) {

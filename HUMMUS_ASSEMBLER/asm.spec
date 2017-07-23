@@ -69,12 +69,12 @@ SHFB    0 0 1 0     The Shift Backward Instruction: (+LABEL)
 
 BROZ    0 0 1 1     The Branch on Zero Instruction: (+LABEL)
                         The instruction checks to see if the arg. register
-                        has a value of zero. If it is, it adds the 2's
+                        has a value of zero. If it isn't, it adds the 2's
                         complement value of its argument bits to the program
                         counter. ($RX is the last written register)
                             
                             Ex: BROZ xFFFF_FF0F
-                                [ if ($RX == 0) PC += signed(0xFF0F); ]
+                                [ if ($RX != 0) PC += signed(0xFF0F); ]
 
 SVPC    0 1 0 0     The Save Program Counter Instruction: (+LABEL)
                         The instruction saves the value of the program
