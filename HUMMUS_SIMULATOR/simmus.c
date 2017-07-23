@@ -8,6 +8,7 @@
 
 #include "simmus.h"
 #include "debug_util.h"
+#include "hplus_asm.h"
 #include "system_memory.h"
 
 system_memory build_system(FILE *input);
@@ -46,9 +47,9 @@ int simulate_hummus(char *file_name_path) {
     }
     if (check_debug_flags("D")) {
         strcpy(file_name_dump, file_name_in);
-        dot = strrchr(file_name_log, '.');
+        dot = strrchr(file_name_dump, '.');
         strcpy(dot, ".dump");
-        file_data_log = fopen(file_name_log, "w");
+        file_data_dump = fopen(file_name_dump, "w");
     }
 
     // Reveal file names details
@@ -87,7 +88,7 @@ int simulate_hummus(char *file_name_path) {
     if(check_debug_flags("W"))
         flclose_rc_02 = fclose(file_data_log);
     int flclose_rc_03 = 0;
-    if(check_debug_flags("B"))
+    if(check_debug_flags("D"))
         flclose_rc_03 = fclose(file_data_dump);
 
     if (flclose_rc_01 != 0 || flclose_rc_02 != 0 || flclose_rc_03 != 0) {
@@ -130,42 +131,169 @@ system_memory build_system(FILE *input_file) {
     return SM;
 }
 
+void dump_registers(uint32_t *sys_reg, FILE *dump_file);
 
 int run_simmus(system_memory SM, FILE *log_file, FILE *dump_file) {
+    
     print_system_memory(SM, log_file);
+    
+    uint32_t *INSTRUCTION = malloc(sizeof(uint32_t));
+    *INSTRUCTION = 0;
+    
+    int SYSTEM_HALT = FALSE;
+    int RSTATUS = EXIT_SUCCESS;
 
-    // some tests
-    uint32_t * data = malloc(sizeof(uint32_t));
-    *data = 0x10011001;
-    system_memory_io(IO_WRITE_MEM, SM, 0xff0a00, data);
-    *data = (*data) * 2;
-    system_memory_io(IO_WRITE_MEM, SM, 0xff0a08, data);
+    // Initialize system variables
+    uint32_t  PC_ADDR = 0x0;
+    uint32_t  PC_UPDATE = 0x4;
+    uint32_t  SYS_REG[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+    uint32_t  *REG_X = SYS_REG;
 
-    // Read it now.
-    printf("------------------------------------------------\n");
-    system_memory_io(IO_READ_MEM, SM, 0xff0a00, data);
-    printf("Here is data 1: %x\n", *data);
-    system_memory_io(IO_READ_MEM, SM, 0xff0a08, data);
-    printf("Here is data 2: %x\n", *data);
+    for (;;) {
 
-    print_system_memory(SM, log_file);
-    printf("------------------------------------------------\n");
-    printf("------------------------------------------------\n");
+        PC_UPDATE = 0x4;
+        system_memory_io(IO_READ_MEM, SM, PC_ADDR, INSTRUCTION);
+        debug_print("@s", log_file, "PC: %08x ", PC_ADDR);
+        debug_print("@s", log_file, "INST: %08x ", *INSTRUCTION);
 
-    *data = (*data) * 2;
-    system_memory_io(IO_WRITE_MEM, SM, 0xff0a04, data);
-    print_system_memory(SM, log_file);
+        switch(get_cnst_4(*INSTRUCTION, 0)) {
+            
+            case BIT_MISC:
+                debug_print("@s", log_file, "[%s] ", TOK_MISC);
+                if (*INSTRUCTION == 0x0)
+                    SYSTEM_HALT = TRUE;
+                break;
+            
+            case BIT_SHFF:
+                debug_print("@s", log_file, "[%s] ", TOK_SHFF);
+                PC_UPDATE = get_cnst_28(*INSTRUCTION);
+                break;
+            
+            case BIT_SHFB:
+                debug_print("@s", log_file, "[%s] ", TOK_SHFB);
+                PC_UPDATE = -1 * get_cnst_28(*INSTRUCTION);
+                break;
+            
+            case BIT_BROZ:
+                debug_print("@s", log_file, "[%s] ", TOK_BROZ);
+                if (*REG_X != 0x0) 
+                    PC_UPDATE = get_cnst_28_signed(*INSTRUCTION);
+                break;
+            
+            case BIT_SVPC:
+                debug_print("@s", log_file, "[%s] ", TOK_SVPC);
+                REG_X = &SYS_REG[get_cnst_4(*INSTRUCTION, 1)];
+                *REG_X = PC_ADDR + get_cnst_24_signed(*INSTRUCTION);
+                break;
+            
+            case BIT_UDPC:
+                debug_print("@s", log_file, "[%s] ", TOK_UDPC);
+                REG_X = &SYS_REG[get_cnst_4(*INSTRUCTION, 1)];
+                PC_ADDR = *REG_X + get_cnst_24_signed(*INSTRUCTION);
+                break;
+            
+            case BIT_LDMY:
+                debug_print("@s", log_file, "[%s] ", TOK_LDMY);
+                REG_X = &SYS_REG[get_cnst_4(*INSTRUCTION, 1)];
+                system_memory_io(IO_READ_MEM, SM,
+                                 PC_ADDR + get_cnst_24_signed(*INSTRUCTION),
+                                 REG_X);
+                break;
+            
+            case BIT_LDRG:
+                debug_print("@s", log_file, "[%s] ", TOK_LDRG);
+                REG_X = &SYS_REG[get_cnst_4(*INSTRUCTION, 1)];
+                system_memory_io(IO_READ_MEM, SM,
+                                 SYS_REG[get_cnst_4(*INSTRUCTION, 2)] + 
+                                 SYS_REG[get_cnst_4(*INSTRUCTION, 3)],
+                                 REG_X);
+                break;
+            
+            case BIT_CNST:
+                debug_print("@s", log_file, "[%s] ", TOK_CNST);
+                REG_X = &SYS_REG[get_cnst_4(*INSTRUCTION, 1)];
+                *REG_X = get_cnst_24_signed(*INSTRUCTION);
+                break;
+            
+            case BIT_BLSM:
+                debug_print("@s", log_file, "[%s] ", TOK_BLSM);
+                break;
+            
+            case BIT_BOOL:
+                debug_print("@s", log_file, "[%s] ", TOK_BOOL);
+                break;
+            
+            case BIT_ADDR:
+                debug_print("@s", log_file, "[%s] ", TOK_ADDR);
+                REG_X = &SYS_REG[get_cnst_4(*INSTRUCTION, 1)];
+                *REG_X = SYS_REG[get_cnst_4(*INSTRUCTION, 2)] +
+                         SYS_REG[get_cnst_4(*INSTRUCTION, 3)];
+                break;
+            
+            case BIT_ADDC:
+                debug_print("@s", log_file, "[%s] ", TOK_ADDC);
+                REG_X = &SYS_REG[get_cnst_4(*INSTRUCTION, 1)];
+                *REG_X = SYS_REG[get_cnst_4(*INSTRUCTION, 2)] +
+                                 get_cnst_20(*INSTRUCTION);
+                break;
+            
+            case BIT_SUBC:
+                debug_print("@s", log_file, "[%s] ", TOK_SUBC);
+                REG_X = &SYS_REG[get_cnst_4(*INSTRUCTION, 1)];
+                *REG_X = SYS_REG[get_cnst_4(*INSTRUCTION, 2)] -
+                                 get_cnst_20(*INSTRUCTION);
+                break;
+            
+            case BIT_STMY:
+                debug_print("@s", log_file, "[%s] ", TOK_STMY);
+                REG_X = &SYS_REG[get_cnst_4(*INSTRUCTION, 1)];
+                system_memory_io(IO_WRITE_MEM, SM,
+                                 PC_ADDR + get_cnst_24_signed(*INSTRUCTION),
+                                 REG_X);
+                break;
+            
+            case BIT_STRG:
+                debug_print("@s", log_file, "[%s] ", TOK_STRG);
+                REG_X = &SYS_REG[get_cnst_4(*INSTRUCTION, 1)];
+                system_memory_io(IO_WRITE_MEM, SM, 
+                                 SYS_REG[get_cnst_4(*INSTRUCTION, 2)] + 
+                                 SYS_REG[get_cnst_4(*INSTRUCTION, 3)],
+                                 REG_X);
+                break;
+            
+            default:
+                debug_print("@s", log_file, "[WTF?] ");
+                SYSTEM_HALT = TRUE;
+                RSTATUS = EXIT_FAILURE;
+                break;
+            
+        }
 
-    system_memory_io(IO_READ_MEM, SM, 0xff0a00, data);
-    printf("Here is data 1: %x\n", *data);
-    system_memory_io(IO_READ_MEM, SM, 0xff0a04, data);
-    printf("Here is data 2: %x\n", *data);
-    system_memory_io(IO_READ_MEM, SM, 0xff0a08, data);
-    printf("Here is data 3: %x\n", *data);
-    system_memory_io(IO_READ_MEM, SM, 0xff0a06, data);
-    printf("Here is data ?: %x\n", *data);
+        debug_print("@s", log_file, "\n");
 
 
-    dump_file=dump_file;
-    return EXIT_SUCCESS;
+        if (SYSTEM_HALT)
+            break;
+
+        PC_ADDR += PC_UPDATE;
+    }
+    dump_registers(SYS_REG, dump_file);
+    free(INSTRUCTION);
+    return RSTATUS;
+}
+
+
+void dump_registers(uint32_t *sys_reg, FILE *dump_file) {
+    debug_print("@Dd", dump_file, 
+    "######################## SYSTEM REGISTER #######################\n"); 
+    for (int i = 0; i < 4; i++) {
+        debug_print("@Dd",dump_file, "| ");
+        debug_print("@Dd",dump_file, "[R%x]> %08x ", 4*i + 0, sys_reg[4*i + 0]);
+        debug_print("@Dd",dump_file, "[R%x]> %08x ", 4*i + 1, sys_reg[4*i + 1]);
+        debug_print("@Dd",dump_file, "[R%x]> %08x ", 4*i + 2, sys_reg[4*i + 2]);
+        debug_print("@Dd",dump_file, "[R%x]> %08x ", 4*i + 3, sys_reg[4*i + 3]);
+        debug_print("@Dd",dump_file, " |\n");
+    }
+    debug_print("@Dd", dump_file, 
+    "################################################################\n");
 }

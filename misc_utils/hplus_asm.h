@@ -155,4 +155,15 @@ int is_token_number(const char *token);
 
 // Universal number convertor.
 int32_t conv_token_number(const char *token, int resolution);
+
+// Assembler Functions
+
+
+// Simulator Functions
+
+uint8_t  get_cnst_4(uint32_t inst, uint8_t i); // i in the index
+uint32_t get_cnst_28(uint32_t inst);
+uint32_t get_cnst_20(uint32_t inst);
+uint32_t get_cnst_28_signed(uint32_t inst);
+uint32_t get_cnst_24_signed(uint32_t inst);
 #endif

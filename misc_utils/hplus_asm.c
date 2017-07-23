@@ -282,3 +282,33 @@ int32_t conv_token_number(const char *token, int resolution){
 
     return result & mask;
 }
+
+
+// Simulator Functions
+
+uint8_t get_cnst_4(uint32_t inst, uint8_t i) {
+    i = i % 8;
+    return (uint8_t) ((( inst & (0x0F << (28 - 4*i))) >> (28 - 4*i)) & 0x0F);
+}
+
+uint32_t get_cnst_28(uint32_t inst) {
+    return (uint32_t) (inst & 0x0FFFFFFF);
+}
+
+uint32_t get_cnst_20(uint32_t inst) {
+    return (uint32_t) (inst & 0x000FFFFF);
+}
+
+uint32_t get_cnst_28_signed(uint32_t inst) {
+    if (inst & 0x08000000)
+        return (uint32_t) ((inst & 0x0FFFFFFF) + 0xF0000000);
+    else
+        return (uint32_t) (inst & 0x0FFFFFFF);
+}
+
+uint32_t get_cnst_24_signed(uint32_t inst) {
+    if (inst & 0x00800000)
+        return (uint32_t) ((inst & 0x00FFFFFF) + 0xFF000000);
+    else
+        return (uint32_t) (inst & 0x00FFFFFF);
+}
