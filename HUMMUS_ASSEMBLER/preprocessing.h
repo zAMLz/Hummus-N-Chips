@@ -41,6 +41,8 @@ int hex_inst_numlabel_reg ( int32_t *inst, tree inst_tree, int resolution,
                             int inverse, int *regx, int yes_label);
 int hex_inst_reg_reg_reg ( int32_t *inst, tree inst_tree, int *regx);
 int hex_inst_reg_reg_num ( int32_t *inst, tree inst_tree, int *regx);
+int hex_inst_reg_reg_reg_tok ( int32_t *inst, tree inst_tree, int *regx,
+                               int tok_type);
 
 // Calculate relative label distances
 int32_t label_dist(int32_t pc, int32_t label, int resolution, 
@@ -57,5 +59,8 @@ int32_t label_dist(int32_t pc, int32_t label, int resolution,
 
 #define ALLOW_LABEL 1
 #define NO_LABEL 0
+
+#define BOOL_TYPE 0
+#define ADD_TYPE 1
 
 #endif

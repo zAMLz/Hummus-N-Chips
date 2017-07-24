@@ -52,6 +52,20 @@ enum BITWISE_ASM {
     BIT_VARI,
 };
 
+// ADD DEFINITIONS
+
+#define     TOK_PP          "++"
+#define     TOK_PN          "+-"
+#define     TOK_NP          "-+"
+#define     TOK_NN          "--"
+
+enum BITWISE_ADD {
+    BIT_PP = 0,
+    BIT_PN,
+    BIT_NP,
+    BIT_NN,
+};
+
 // BOOL DEFINITIONS
 
 #define     TOK_BAND        "BAND"
@@ -146,6 +160,7 @@ enum BITWISE_REG {
 
 // Gets a token and returns its relevent bitvalues as int
 int get_inst_opcode(char *token);
+int get_add_argcode(char *token);
 int get_bool_argcode(char *token);
 int get_reg_argcode(char *token);
 

@@ -118,14 +118,8 @@ CNST    1 0 0 0     The Constant Instruction:
                             EX: CNST $R7 0xFF001
                                 [ $R7 = 0xFF001; ]
 
-BLSM    1 0 0 1     The Boolean State Machine Instruction:
-                        This tells the boolean state machine what instruction
-                        to do when it is actually called. It supports a variety
-                        of different boolean instructions (16 kinds).
-                            
-                            Ex: BLSM 0x0002
-                                [ $BL = 0x0002; ]
-
+XXXX    1 0 0 1     Deprecated:
+                        
 BOOL    1 0 1 0     The Boolean Instruction:
                         The instruction performs one of sixteen boolean actions.
                         The actions themselves are chosen based on the state
@@ -133,15 +127,15 @@ BOOL    1 0 1 0     The Boolean Instruction:
                         It performs the particular action on two specified
                         registers and stores it into another register.
                             
-                            Ex: BOOL $R4 $R1 $R2
+                            Ex: BOOL $R4 $R1 $R2 bool
                                 [ $R4 = bool($R1, $R2); ] 
 
 ADDR    1 0 1 1     The Add Register Instruction:
                         The instruction adds two registers and store the result
                         in the final register.
 
-                            Ex: ADDR $R0 $R1 $R2
-                                [ $R0 = $R1 + $R2; ]
+                            Ex: ADDR $R0 $R1 $R2 +-
+                                [ $R0 = + $R1 - $R2; ]
 
 ADDC    1 1 0 0     The Add Constant Instruction:
                         The instruction adds a constant to a register and stores

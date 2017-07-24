@@ -22,7 +22,7 @@ MAKEARGS  =  --no-print-directory -C
 #################################################
 
 # Build everything!!!
-all: ${HASM} ${HSIM} ${CHIP}
+all: ${HASM} ${HSIM} ${CHIP} clean
 
 # Builds the documentation and cleans it up
 docs:

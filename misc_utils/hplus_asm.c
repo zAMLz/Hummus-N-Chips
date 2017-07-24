@@ -40,6 +40,15 @@ int get_inst_opcode(char *token){
     return -1;
 }
 
+int get_add_argcode(char *token) {
+    if (strcmp(token, TOK_PP)       == 0) return BIT_PP;
+    if (strcmp(token, TOK_PN)       == 0) return BIT_PN;
+    if (strcmp(token, TOK_NP)       == 0) return BIT_NP;
+    if (strcmp(token, TOK_NN)       == 0) return BIT_NN;
+
+    return -1;
+}
+
 int get_bool_argcode(char *token) {
     if (strcmp(token, TOK_BAND)     == 0) return BIT_BAND;
     if (strcmp(token, TOK_LAND)     == 0) return BIT_LAND;
@@ -282,7 +291,6 @@ int32_t conv_token_number(const char *token, int resolution){
 
     return result & mask;
 }
-
 
 // Simulator Functions
 

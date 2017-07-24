@@ -264,6 +264,7 @@ int generate_symbol_tables(tree ast, dictionary symtab) {
             }
 
             else if ((get_bool_argcode(node->token) >= 0) ||
+                (get_add_argcode(node->token) >= 0)  ||
                 (get_reg_argcode(node->token) >= 0)  ||
                 (is_token_number(node->token) > 0) )
                 continue;
@@ -488,6 +489,55 @@ int hex_inst_reg_reg_reg ( int32_t *inst, tree inst_tree, int *regx) {
         // the furst number or arglabel.
         if (is_token_label(token))
             continue;
+        else if (get_reg_argcode(token) != -1 && found_reg < 3) {
+
+            if (get_reg_argcode(token) != 16) {
+                *inst = *inst + 
+                        (((int32_t)get_reg_argcode(token)) << (24 - (4*found_reg)));
+                if (found_reg == 0)
+                    reg_temp = get_reg_argcode(token);
+            }
+            else {
+                *inst = *inst + (((int32_t) *regx) << (24 - (4*found_reg)));
+            }            
+            found_reg++;
+        }
+        else {
+            fprintf(stderr, "\nUnidentified Token Found %s\n", token);
+            return EXIT_FAILURE;
+        }
+    }
+    *regx = reg_temp;
+    if (found_reg < 3){
+        fprintf(stderr, "\nRegister arguments are missing!\n");    
+        return EXIT_FAILURE;
+    }
+    return EXIT_SUCCESS;
+}
+
+// This instruction must take a 3 registers and a special token
+// FORMAT; $(inst) $(register, register, register, token) $(label_1, label_2, ...)
+int hex_inst_reg_reg_reg_tok ( int32_t *inst, tree inst_tree, int *regx,
+                               int tok_type) {
+
+    int found_reg = 0;
+    int reg_temp = *regx;
+    char *token;
+
+    for (int32_t i = 0; i < inst_tree->size; i++) {
+
+        token = inst_tree->children[i]->token;
+
+        // If the token is a label, we ignore it. We simply wish to find
+        // the furst number or arglabel.
+        if (is_token_label(token))
+            continue;
+        else if ((tok_type == BOOL_TYPE) && (get_bool_argcode(token) != -1)) {
+            *inst = *inst + ((int32_t) get_bool_argcode(token));
+        }
+        else if ((tok_type == ADD_TYPE) && (get_add_argcode(token) != -1)) {
+            *inst = *inst + ((int32_t) get_add_argcode(token));
+        }
         else if (get_reg_argcode(token) != -1 && found_reg < 3) {
 
             if (get_reg_argcode(token) != 16) {

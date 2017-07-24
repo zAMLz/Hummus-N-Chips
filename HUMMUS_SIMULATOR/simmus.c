@@ -149,6 +149,7 @@ int run_simmus(system_memory SM, FILE *log_file, FILE *dump_file) {
     uint32_t  SYS_REG[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     uint32_t  *REG_X = SYS_REG;
 
+    // for (int i = 0; i < 100; i++) {
     for (;;) {
 
         PC_UPDATE = 0x4;
@@ -176,7 +177,7 @@ int run_simmus(system_memory SM, FILE *log_file, FILE *dump_file) {
             
             case BIT_BROZ:
                 debug_print("@s", log_file, "[%s] ", TOK_BROZ);
-                if (*REG_X != 0x0) 
+                if (*REG_X == 0x0) 
                     PC_UPDATE = get_cnst_28_signed(*INSTRUCTION);
                 break;
             
@@ -221,13 +222,94 @@ int run_simmus(system_memory SM, FILE *log_file, FILE *dump_file) {
             
             case BIT_BOOL:
                 debug_print("@s", log_file, "[%s] ", TOK_BOOL);
+                REG_X = &SYS_REG[get_cnst_4(*INSTRUCTION, 1)];
+
+                switch(*INSTRUCTION & 0xF) {
+                    case BIT_BAND:
+                        *REG_X = (SYS_REG[get_cnst_4(*INSTRUCTION, 2)]) &
+                                 (SYS_REG[get_cnst_4(*INSTRUCTION, 3)]);
+                        break;
+                    case BIT_LAND:
+                        *REG_X = (SYS_REG[get_cnst_4(*INSTRUCTION, 2)]) &&
+                                 (SYS_REG[get_cnst_4(*INSTRUCTION, 3)]);
+                        break;
+                    case BIT_BOR:
+                        *REG_X = (SYS_REG[get_cnst_4(*INSTRUCTION, 2)]) |
+                                 (SYS_REG[get_cnst_4(*INSTRUCTION, 3)]);
+                        break;
+                    case BIT_LOR:
+                        *REG_X = (SYS_REG[get_cnst_4(*INSTRUCTION, 2)]) ||
+                                 (SYS_REG[get_cnst_4(*INSTRUCTION, 3)]);
+                        break;
+                    case BIT_BXOR:
+                        *REG_X = (SYS_REG[get_cnst_4(*INSTRUCTION, 2)]) ^
+                                 (SYS_REG[get_cnst_4(*INSTRUCTION, 3)]);
+                        break;
+                    case BIT_BXNOR:
+                        *REG_X = ~((SYS_REG[get_cnst_4(*INSTRUCTION, 2)]) ^
+                                   (SYS_REG[get_cnst_4(*INSTRUCTION, 3)]));
+                        break;
+                    case BIT_LB1:
+                        *REG_X = (SYS_REG[get_cnst_4(*INSTRUCTION, 2)]) << 1 ;
+                        break;
+                    case BIT_LB2:
+                        *REG_X = (SYS_REG[get_cnst_4(*INSTRUCTION, 3)]) << 1;
+                        break;
+                    case BIT_BNAND:
+                        *REG_X = ~((SYS_REG[get_cnst_4(*INSTRUCTION, 2)]) &
+                                   (SYS_REG[get_cnst_4(*INSTRUCTION, 3)]));
+                        break;
+                    case BIT_LNAND:
+                        *REG_X = !((SYS_REG[get_cnst_4(*INSTRUCTION, 2)]) &&
+                                   (SYS_REG[get_cnst_4(*INSTRUCTION, 3)]));
+                        break;
+                    case BIT_BNOR:
+                        *REG_X = ~((SYS_REG[get_cnst_4(*INSTRUCTION, 2)]) |
+                                   (SYS_REG[get_cnst_4(*INSTRUCTION, 3)]));
+                        break;
+                    case BIT_LNOR:
+                        *REG_X = !((SYS_REG[get_cnst_4(*INSTRUCTION, 2)]) ||
+                                   (SYS_REG[get_cnst_4(*INSTRUCTION, 3)]));
+                        break;
+                    case BIT_NB1:
+                        *REG_X = ~(SYS_REG[get_cnst_4(*INSTRUCTION, 2)]) ;
+                        break;
+                    case BIT_NB2:
+                        *REG_X = ~(SYS_REG[get_cnst_4(*INSTRUCTION, 2)]) ;
+                        break;
+                    case BIT_RB1:
+                        *REG_X = (SYS_REG[get_cnst_4(*INSTRUCTION, 2)]) >> 1 ;
+                        break;
+                    case BIT_RB2:
+                        *REG_X = (SYS_REG[get_cnst_4(*INSTRUCTION, 2)]) >> 1 ;
+                    default:
+                        break;
+                }
                 break;
             
             case BIT_ADDR:
                 debug_print("@s", log_file, "[%s] ", TOK_ADDR);
                 REG_X = &SYS_REG[get_cnst_4(*INSTRUCTION, 1)];
-                *REG_X = SYS_REG[get_cnst_4(*INSTRUCTION, 2)] +
-                         SYS_REG[get_cnst_4(*INSTRUCTION, 3)];
+                
+                switch(*INSTRUCTION & 0xF) {
+                    case BIT_PP:
+                        *REG_X = ( 1 * SYS_REG[get_cnst_4(*INSTRUCTION, 2)]) +
+                                 ( 1 * SYS_REG[get_cnst_4(*INSTRUCTION, 3)]);
+                        break;
+                    case BIT_PN:
+                        *REG_X = ( 1 * SYS_REG[get_cnst_4(*INSTRUCTION, 2)]) +
+                                 (-1 * SYS_REG[get_cnst_4(*INSTRUCTION, 3)]);
+                        break;
+                    case BIT_NP:
+                        *REG_X = (-1 * SYS_REG[get_cnst_4(*INSTRUCTION, 2)]) +
+                                 ( 1 * SYS_REG[get_cnst_4(*INSTRUCTION, 3)]);
+                        break;
+                    case BIT_NN:
+                    default:
+                        *REG_X = (-1 * SYS_REG[get_cnst_4(*INSTRUCTION, 2)]) +
+                                 (-1 * SYS_REG[get_cnst_4(*INSTRUCTION, 3)]);
+                    break;
+                }
                 break;
             
             case BIT_ADDC:
@@ -276,6 +358,9 @@ int run_simmus(system_memory SM, FILE *log_file, FILE *dump_file) {
             break;
 
         PC_ADDR += PC_UPDATE;
+        
+        if (check_debug_flags("E"))
+            dump_registers(SYS_REG, dump_file);
     }
     dump_registers(SYS_REG, dump_file);
     free(INSTRUCTION);

@@ -413,25 +413,27 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
             
             case BIT_BOOL:
                 *instruction = 0xA0000000;
-                rstatus = hex_inst_reg_reg_reg (instruction,
+                rstatus = hex_inst_reg_reg_reg_tok (instruction,
                                                 abstree->children[i],
-                                                &regx /* Previous Register */);
+                                                &regx, // Previous Register
+                                                BOOL_TYPE);
                 print_in_bin(*instruction, out_file);
                 fwrite(instruction, sizeof(int32_t), 1, hex_file);
                 break;
             
             case BIT_ADDR:
                 *instruction = 0xB0000000;
-                rstatus = hex_inst_reg_reg_reg (instruction,
+                rstatus = hex_inst_reg_reg_reg_tok (instruction,
                                                 abstree->children[i],
-                                                &regx /* Previous Register */);
+                                                &regx, // Previous Register
+                                                ADD_TYPE);
                 print_in_bin(*instruction, out_file);
                 fwrite(instruction, sizeof(int32_t), 1, hex_file);
                 break;
             
             case BIT_ADDC:
                 *instruction = 0xC0000000;
-                rstatus = hex_inst_reg_reg_reg (instruction,
+                rstatus = hex_inst_reg_reg_num (instruction,
                                                 abstree->children[i],
                                                 &regx /* Previous Register */);
                 print_in_bin(*instruction, out_file);
@@ -485,7 +487,7 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                 fprintf(stderr, "[Well this is ackward]");
                 break;
         }
-        debug_print("@bw", out_file, "\n");
+        debug_print("@bw", out_file, " PC: %08x\n", i*4);
         if (rstatus == EXIT_FAILURE) {
             fprintf(stderr, "Unexpected Error. Aborting...\n");
             fprintf(stderr, "Location:\n%s\n", abstree->children[i]->token);

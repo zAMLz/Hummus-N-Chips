@@ -1,0 +1,98 @@
+
+# This impliments a function stack
+
+SHFF        MAIN_PROGRAM
+
+# We must load the stack pointer
+LDMY        $RF  STACK_POINTER_START      :MAIN_PROGRAM
+
+# Store stuff onto the stack
+
+CNST        $RD  0x2
+SVPC        $RE  0x0
+SHFF        STACK_PUSH
+
+CNST        $RD  0x4
+SVPC        $RE  0x0
+SHFF        STACK_PUSH
+
+CNST        $RD  0x8
+SVPC        $RE  0x0
+SHFF        STACK_PUSH
+
+CNST        $RD  0x10
+SVPC        $RE  0x0
+SHFF        STACK_PUSH
+
+# Pop stuff off the stack
+
+SVPC        $RE  0x0
+SHFF        STACK_POP
+CNST        $R4  0x0
+ADDR        $R4  $R4  $RD
+
+SVPC        $RE  0x0
+SHFF        STACK_POP
+CNST        $R5  0x0
+ADDR        $R5  $R5  $RD
+
+SVPC        $RE  0x0
+SHFF        STACK_POP
+CNST        $R6  0x0
+ADDR        $R6  $R6  $RD
+
+SVPC        $RE  0x0
+SHFF        STACK_POP
+CNST        $R7  0x0
+ADDR        $R7  $R7  $RD
+
+MISC        0x0             :END_PROGRAM
+
+##################################################
+
+# Command for stack push
+
+LDMY        $R0  STACK_POINTER_END    :STACK_PUSH
+ADDR        $R0  $RF  $R0  +-
+BROZ        STACK_PUSH_END
+
+CNST        $R0  0x0
+STRG        $RD  $RF  $R0
+ADDC        $RF  $RF  0x4
+UDPC        $RE  0x4         :STACK_PUSH_END
+
+##################################################
+
+# Command for stack pop
+
+LDMY        $R0  STACK_POINTER_START   :STACK_POP
+ADDR        $R0  $RF  $R0  +-
+BROZ        STACK_POP_END
+
+SUBC        $RF  $RF  0x4
+CNST        $R0  0x0
+LDRG        $RD  $RF  $R0
+UDPC        $RE  0x4         :STACK_POP_END
+
+##################################################
+
+# This is where the stack parameters are defined
+# its about 15 mb size for the stack.
+# Ensure that there is number of bytes between
+# are divisable by 4
+
+VARI        0x10_0000         :STACK_POINTER_START
+VARI       0x100_0000         :STACK_POINTER_END
+
+
+
+#######################################################
+
+# SAMPLE OUTPUT
+
+# ######################## SYSTEM REGISTER #######################
+# | [R0]> 00000000 [R1]> 00000000 [R2]> 00000000 [R3]> 00000000  |
+# | [R4]> 00000010 [R5]> 00000008 [R6]> 00000004 [R7]> 00000002  |
+# | [R8]> 00000000 [R9]> 00000000 [Ra]> 00000000 [Rb]> 00000000  |
+# | [Rc]> 00000000 [Rd]> 00000002 [Re]> 00000068 [Rf]> 00100000  |
+# ################################################################
