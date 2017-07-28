@@ -152,6 +152,11 @@ int run_simmus(system_memory SM, FILE *log_file, FILE *dump_file) {
     // for (int i = 0; i < 100; i++) {
     for (;;) {
 
+        if (check_debug_flags("E"))
+            dump_registers(SYS_REG, dump_file);
+        if (check_debug_flags("H"))
+            getchar(); 
+        
         PC_UPDATE = 0x4;
         system_memory_io(IO_READ_MEM, SM, PC_ADDR, INSTRUCTION);
         debug_print("@s", log_file, "PC: %08x ", PC_ADDR);
@@ -191,6 +196,7 @@ int run_simmus(system_memory SM, FILE *log_file, FILE *dump_file) {
                 debug_print("@s", log_file, "[%s] ", TOK_UDPC);
                 REG_X = &SYS_REG[get_cnst_4(*INSTRUCTION, 1)];
                 PC_ADDR = *REG_X + get_cnst_24_signed(*INSTRUCTION);
+                PC_UPDATE = 0x0;
                 break;
             
             case BIT_LDMY:
@@ -358,9 +364,6 @@ int run_simmus(system_memory SM, FILE *log_file, FILE *dump_file) {
             break;
 
         PC_ADDR += PC_UPDATE;
-        
-        if (check_debug_flags("E"))
-            dump_registers(SYS_REG, dump_file);
     }
     dump_registers(SYS_REG, dump_file);
     free(INSTRUCTION);

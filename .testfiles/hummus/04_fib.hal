@@ -1,0 +1,288 @@
+
+# This impliments a fibonnaci using
+# the same stack code from the previous 
+# test program. The stack is described
+# as below.
+
+# Inside a funciton
+# [r1, r2, r3, ..., PC, a1, a2, 2 ]
+
+# Calling a function inside a function
+# [r1, r2, r3, ..., PC, a1, a2, 2, r1, r2, r3, ..., PC, a1, 1 ] 
+
+# Getting the return value from inside a function
+# [r1, r2, r3, ..., PC, a1, a2, 2 ] | -156
+
+# Only registers $R0 - $R9 are saved.
+# as these are the what we call local registers
+# registers from $RA to $RF are global registers
+# so they should not be saved.
+# This is not a matter of hardware implementation
+# but just good practice to create standardization
+# in the assembly language
+
+SHFF        MAIN_PROGRAM
+
+# We must load the stack pointer
+LDMY        $RF  STACK_POINTER_START      :MAIN_PROGRAM
+
+# Push our arguments for the fibonnaci function
+# fib(n) -> 1 + 1 + 2 + 3 + 5 + 8 + ...
+
+# We actually need to save an offsetted
+# program counter first
+SVPC        $RD  FIB_INITIAL_CALL
+SVPC        $RE  0x4
+SHFF        STACK_PUSH
+
+# Value of n
+CNST        $RD  30
+SVPC        $RE  0x4
+SHFF        STACK_PUSH
+
+# Push the argument count
+CNST        $RD  1
+SVPC        $RE  0x4
+SHFF        STACK_PUSH
+
+# Call the fibonnaci function
+SHFF        FIBONNACI_FUNCTION_START_HERE       :FIB_INITIAL_CALL
+
+# Pop the return count and the return value
+SVPC        $RE  0x4
+SHFF        STACK_POP
+SVPC        $RE  0x4
+SHFF        STACK_POP
+
+MISC        0x0             :END_PROGRAM
+
+##################################################
+
+# Define the fibonnaci function here
+
+# Obtain the prior argument count number
+SVPC        $RE  0x4            :FIBONNACI_FUNCTION_START_HERE
+SHFF        STACK_POP
+
+# We actually don't need the argument count
+# for fibonnaci function, but we show its
+# functionality.
+
+# Lets pull the only argument passed to the func
+SVPC        $RE  0x4
+SHFF        STACK_POP
+ADDC        $R0  $RD  0
+
+# Check to see if the number we found is 0 or 1.
+BROZ        FIB_BASE_CASE
+SUBC        $R0  $R0  1
+BROZ        FIB_BASE_CASE
+SHFF        FIB_RECURSION_CASE
+
+# Perform the base case return for fibonnaci
+# Pop off the PC and save it
+SVPC        $RE  0x4            :FIB_BASE_CASE
+SHFF        STACK_POP
+ADDC        $R0  $RD  0
+
+# Push the base value onto the stack
+CNST        $RD  1
+SVPC        $RE  0x4
+SHFF        STACK_PUSH
+# Push the return count value onto the stack
+CNST        $RD  1
+SVPC        $RE  0x4
+SHFF        STACK_PUSH
+
+# Return from the base case
+UDPC        $R0  0x4            :FIB_BASE_CASE_END
+
+# If we ain't in the base case, we will need 
+# to recurse through.
+# Get our original argument back
+ADDC        $R0  $R0  1         :FIB_RECURSION_CASE
+
+# Call the fib function for (n-1) case
+
+# Compute (n-1)
+SUBC        $R0  $R0  1
+
+# Store the current "live" registers
+ADDC        $RD  $R0  0x0
+SVPC        $RE  0x4
+SHFF        STACK_PUSH
+
+# Save the offsetted program counter
+SVPC        $RD  FIB_CALL_N_1_END
+SVPC        $RE  0x4
+SHFF        STACK_PUSH
+
+# Save the arguments
+ADDC        $RD  $R0  0
+SVPC        $RE  0x4
+SHFF        STACK_PUSH
+
+# Save the argument count
+CNST        $RD  0x1
+SVPC        $RE  0x4
+SHFF        STACK_PUSH
+
+# Once the this has been saved, we can safely call
+# our own function again!
+SHFB        FIBONNACI_FUNCTION_START_HERE    :FIB_CALL_N_1_END
+
+# Pop off all the return data
+
+# First pop removes the return count (we dont need it though)
+SVPC        $RE  0x4 
+SHFF        STACK_POP
+
+# while second removes the actual return value
+# Incidently we store it in register 1
+SVPC        $RE  0x4 
+SHFF        STACK_POP
+ADDC        $R1  $RD  0x0
+
+# Once we have popped off all the return data
+# we must pop off the saved registers
+SVPC        $RE  0x4 
+SHFF        STACK_POP
+ADDC        $R0  $RD  0x0
+
+# Typically we would then do whatever the next thing
+# there is to do, but we actually call fib again
+# this time, for n-2
+
+# Call the fib function for (n-2) case
+
+# Compute (n-2)
+SUBC        $R0  $R0  1
+
+# Store the current "live" registers
+ADDC        $RD  $R0  0x0
+SVPC        $RE  0x4
+SHFF        STACK_PUSH
+ADDC        $RD  $R1  0x0
+SVPC        $RE  0x4
+SHFF        STACK_PUSH
+
+# Save the offsetted program counter
+SVPC        $RD  FIB_CALL_N_2_END
+SVPC        $RE  0x4
+SHFF        STACK_PUSH
+
+# Save the arguments
+ADDC        $RD  $R0  0
+SVPC        $RE  0x4
+SHFF        STACK_PUSH
+
+# Save the argument count
+CNST        $RD  0x1
+SVPC        $RE  0x4
+SHFF        STACK_PUSH
+
+# Once the this has been saved, we can safely call
+# our own function again!
+SHFB        FIBONNACI_FUNCTION_START_HERE    :FIB_CALL_N_2_END
+
+# Pop off all the return data
+
+# First pop removes the return count
+SVPC        $RE  0x4 
+SHFF        STACK_POP
+
+# while second removes the actual return value
+# Incidently we store it in register 2
+SVPC        $RE  0x4 
+SHFF        STACK_POP
+ADDC        $R2  $RD  0x0
+
+# Once we have popped off all the return data
+# we must pop off the saved registers
+SVPC        $RE  0x4 
+SHFF        STACK_POP
+ADDC        $R1  $RD  0x0
+SVPC        $RE  0x4 
+SHFF        STACK_POP
+ADDC        $R0  $RD  0x0
+
+# Our functin has now recursed over its branches. YAY
+# This means we can add our results.
+ADDR        $R1  $R1  $R2
+
+# Pop off the PC and save it
+SVPC        $RE  0x4
+SHFF        STACK_POP
+ADDC        $R0  $RD  0
+
+# Push the computed result onto the stack
+ADDC        $RD  $R1  0
+SVPC        $RE  0x4
+SHFF        STACK_PUSH
+# Push the return count value onto the stack
+CNST        $RD  1
+SVPC        $RE  0x4
+SHFF        STACK_PUSH
+
+# Return from the base case
+UDPC        $R0  0x4            :FIBONNACI_FUNCTION_END
+
+##################################################
+
+# Command for stack peek
+# $RD -> Input - Peaking distance (not in bytes!!!)
+# $RF -> Input - Stack Pointer
+# $RE -> Input - Return Address
+# ----------------------------
+# $RD -> Output - Peaked result
+
+ADDR        $RD  $RD  $RD           :STACK_PEEK
+ADDR        $RD  $RD  $RD
+LDRG        $RD  $RF  $RD
+UDPC        $RE  0x4                :STACK_PEEK_END
+
+##################################################
+
+# Command for stack push
+# $RD -> Input - Data to store
+# $RF -> Input - Stack Pointer
+# $RE -> Input - Return Address
+
+LDMY        $RC  STACK_POINTER_END    :STACK_PUSH
+ADDR        $RC  $RF  $RC  +-
+BROZ        STACK_PUSH_END
+
+CNST        $RC  0x0
+STRG        $RD  $RF  $RC
+ADDC        $RF  $RF  0x4
+UDPC        $RE  0x4         :STACK_PUSH_END
+
+##################################################
+
+# Command for stack pop
+# $RF -> Input - Stack Pointer
+# $RE -> Input - Return Address
+# ----------------------------
+# $RD -> Output - Data to return
+
+LDMY        $RC  STACK_POINTER_START   :STACK_POP
+ADDR        $RC  $RF  $RC  +-
+BROZ        STACK_POP_END
+
+SUBC        $RF  $RF  0x4
+CNST        $RC  0x0
+LDRG        $RD  $RF  $RC
+UDPC        $RE  0x4         :STACK_POP_END
+
+##################################################
+
+# This is where the stack parameters are defined
+# its about 15 mb size for the stack.
+# Ensure that there is number of bytes between
+# are divisable by 4
+
+VARI        0x10_0000         :STACK_POINTER_START
+VARI      0x1000_0000         :STACK_POINTER_END
+
+#######################################################
+

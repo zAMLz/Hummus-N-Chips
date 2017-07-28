@@ -9,39 +9,39 @@ LDMY        $RF  STACK_POINTER_START      :MAIN_PROGRAM
 # Store stuff onto the stack
 
 CNST        $RD  0x2
-SVPC        $RE  0x0
+SVPC        $RE  0x4
 SHFF        STACK_PUSH
 
 CNST        $RD  0x4
-SVPC        $RE  0x0
+SVPC        $RE  0x4
 SHFF        STACK_PUSH
 
 CNST        $RD  0x8
-SVPC        $RE  0x0
+SVPC        $RE  0x4
 SHFF        STACK_PUSH
 
 CNST        $RD  0x10
-SVPC        $RE  0x0
+SVPC        $RE  0x4
 SHFF        STACK_PUSH
 
 # Pop stuff off the stack
 
-SVPC        $RE  0x0
+SVPC        $RE  0x4
 SHFF        STACK_POP
 CNST        $R4  0x0
 ADDR        $R4  $R4  $RD
 
-SVPC        $RE  0x0
+SVPC        $RE  0x4
 SHFF        STACK_POP
 CNST        $R5  0x0
 ADDR        $R5  $R5  $RD
 
-SVPC        $RE  0x0
+SVPC        $RE  0x4
 SHFF        STACK_POP
 CNST        $R6  0x0
 ADDR        $R6  $R6  $RD
 
-SVPC        $RE  0x0
+SVPC        $RE  0x4
 SHFF        STACK_POP
 CNST        $R7  0x0
 ADDR        $R7  $R7  $RD
