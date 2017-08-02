@@ -17,7 +17,7 @@
 #define     TOK_LDRG        "LDRG"
 
 #define     TOK_CNST        "CNST"
-#define     TOK_BLSM        "BLSM"
+#define     TOK_IOIO        "IOIO"
 #define     TOK_BOOL        "BOOL"
 #define     TOK_ADDR        "ADDR"
 
@@ -40,7 +40,7 @@ enum BITWISE_ASM {
     BIT_LDRG,
 
     BIT_CNST,
-    BIT_BLSM,
+    BIT_IOIO,
     BIT_BOOL,
     BIT_ADDR,
 

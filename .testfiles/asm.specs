@@ -1,5 +1,5 @@
 
-################################################################################
+###############################################################################
  _   _ _   _ __  __ __  __ _   _ ____  ____  _    _   _ ____  
 | | | | | | |  \/  |  \/  | | | / ___||  _ \| |  | | | / ___| 
 | |_| | | | | |\/| | |\/| | | | \___ \| |_) | |  | | | \___ \ 
@@ -12,7 +12,7 @@
  ___) |  __/| |__| |___ | ||  _|  | | |___ / ___ \| |  | | |_| | |\  |___) |
 |____/|_|   |_____\____|___|_|   |___\____/_/   \_\_| |___\___/|_| \_|____/ 
                                                                             
-################################################################################
+###############################################################################
 
  *  The assembly language will be changed a bit from its
     old Minecraft predecessor. This document will specify all
@@ -43,7 +43,7 @@
     provided as a pseudo instruction that defines a memory location.
     It will occupy 32 bits.
 
-################################################################################
+###############################################################################
 
 MISC    0 0 0 0     The Miscellaneous Instruction:
                         Nothing particularly special about this instruction.
@@ -118,12 +118,20 @@ CNST    1 0 0 0     The Constant Instruction:
                             EX: CNST $R7 0xFF001
                                 [ $R7 = 0xFF001; ]
 
-XXXX    1 0 0 1     Deprecated:
+IOIO    1 0 0 1     The Input Output Instruction:
+                        The instruction takes the a register which will be
+                        used for input and output. A token is passed to
+                        indicate whether the the operation is input or output.
+                        Finally, if the operation is an output, a locations to
+                        which cell to drawn on is also used.
+
+                            EX: IOIO $R5 OUTPUT 0x04
+                                IOIO $R5 INPUT
                         
 BOOL    1 0 1 0     The Boolean Instruction:
-                        The instruction performs one of sixteen boolean actions.
+                        The instruction performs one of sixteen boolean ops.
                         The actions themselves are chosen based on the state
-                        of the boolean state machine. It is configured via BLSM.
+                        of the boolean state machine.
                         It performs the particular action on two specified
                         registers and stores it into another register.
                             

@@ -403,7 +403,7 @@ int ast_to_hex(FILE *hex_file, FILE *out_file, tree abstree, dictionary symtab) 
                 fwrite(instruction, sizeof(int32_t), 1, hex_file);
                 break;
             
-            case BIT_BLSM:
+            case BIT_IOIO:
                 *instruction = 0x90000000;
                 rstatus = hex_inst_bool( instruction, 
                                         abstree->children[i]);

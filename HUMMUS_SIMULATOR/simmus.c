@@ -222,8 +222,8 @@ int run_simmus(system_memory SM, FILE *log_file, FILE *dump_file) {
                 *REG_X = get_cnst_24_signed(*INSTRUCTION);
                 break;
             
-            case BIT_BLSM:
-                debug_print("@s", log_file, "[%s] ", TOK_BLSM);
+            case BIT_IOIO:
+                debug_print("@s", log_file, "[%s] ", TOK_IOIO);
                 break;
             
             case BIT_BOOL:

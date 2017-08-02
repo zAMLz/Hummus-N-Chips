@@ -26,7 +26,7 @@ int get_inst_opcode(char *token){
     if (strcmp(token, TOK_LDRG)     == 0) return BIT_LDRG;
     
     if (strcmp(token, TOK_CNST)     == 0) return BIT_CNST;
-    if (strcmp(token, TOK_BLSM)     == 0) return BIT_BLSM;
+    if (strcmp(token, TOK_IOIO)     == 0) return BIT_IOIO;
     if (strcmp(token, TOK_BOOL)     == 0) return BIT_BOOL;
     if (strcmp(token, TOK_ADDR)     == 0) return BIT_ADDR;
     
